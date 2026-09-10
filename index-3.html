@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مشواري">
+<meta name="theme-color" content="#0F1B2B">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>مشواري</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1EFE8; --surface:#FFFFFF; --surface2:#E7E3D8; --text:#211D16; --text-dim:#7A7466;
+  --accent:#C1791E; --accent-soft:#F3DDB4; --income:#217A63; --income-soft:#DCEFE8;
+  --expense:#B5382A; --expense-soft:#F6DFDA; --border:rgba(33,29,22,.10); --shadow:0 2px 10px rgba(33,29,22,.08);
+  --radius:16px;
+}
+[data-theme="dark"]{
+  --bg:#0F1620; --surface:#182130; --surface2:#212C3E; --text:#EDEFF2; --text-dim:#8C97A8;
+  --accent:#E7A33D; --accent-soft:#3A2C15; --income:#3FBFA0; --income-soft:#123227;
+  --expense:#E4685A; --expense-soft:#3A1A16; --border:rgba(255,255,255,.09); --shadow:0 2px 14px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;background:var(--bg);}
+body{font-family:'Tajawal',system-ui,sans-serif; color:var(--text); font-variant-numeric:tabular-nums; overscroll-behavior-y:none; -webkit-user-select:none; user-select:none;}
+input,textarea{user-select:text; -webkit-user-select:text;}
+button{font-family:inherit;}
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding-bottom:78px;}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:8px;}
+.brand .mark{width:34px;height:34px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--bg);box-shadow:var(--shadow);}
+.brand .name{font-weight:900;font-size:19px;letter-spacing:-.3px;}
+.todaydate{font-size:12px;color:var(--text-dim);font-weight:500;}
+main{flex:1;padding:4px 16px 24px;}
+.view{display:none;}
+.view.active{display:block;animation:fadein .18s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.card h3{margin:0 0 10px;font-size:14px;font-weight:700;color:var(--text-dim);}
+
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.summary-grid .net{grid-column:1/-1;}
+.stat{background:var(--surface2);border-radius:12px;padding:12px 14px;}
+.stat .lbl{font-size:12px;color:var(--text-dim);font-weight:500;margin-bottom:4px;}
+.stat .val{font-size:22px;font-weight:800;}
+.stat.income .val{color:var(--income);}
+.stat.expense .val{color:var(--expense);}
+.stat.net .val{font-size:30px;}
+.stat.net{background:linear-gradient(135deg,var(--accent-soft),var(--surface2));}
+
+.alerts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.alert{display:flex;gap:8px;align-items:center;background:var(--expense-soft);color:var(--expense);border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;}
+.alert span.ic{font-size:16px;}
+
+.datebar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.datebar input[type=date]{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--text);font-family:inherit;font-size:13px;}
+
+.bigbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.bigbtn{border:none;border-radius:16px;padding:18px 10px;font-weight:800;font-size:16px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:var(--shadow);cursor:pointer;color:#fff;}
+.bigbtn.inc{background:var(--income);}
+.bigbtn.exp{background:var(--expense);}
+.bigbtn .ic{font-size:24px;}
+
+.meta-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.meta-row label{display:block;font-size:11px;color:var(--text-dim);margin-bottom:4px;font-weight:600;}
+.meta-row input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text);font-family:inherit;font-size:14px;text-align:center;}
+.savebtn{margin-top:10px;width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;}
+
+.txlist{display:flex;flex-direction:column;gap:8px;}
+.txrow{display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:12px;padding:10px 12px;}
+.txrow .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.txrow.inc .dot{background:var(--income);}
+.txrow.exp .dot{background:var(--expense);}
+.txrow .info{flex:1;min-width:0;}
+.txrow .cat{font-weight:700;font-size:14px;}
+.txrow .note{font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.txrow .amt{font-weight:800;font-size:15px;}
+.txrow.inc .amt{color:var(--income);}
+.txrow.exp .amt{color:var(--expense);}
+.txrow .del{background:none;border:none;color:var(--text-dim);font-size:16px;cursor:pointer;padding:4px;}
+.empty{text-align:center;color:var(--text-dim);font-size:13px;padding:20px 0;}
+
+.tabs{display:flex;gap:6px;background:var(--surface2);border-radius:12px;padding:4px;margin-bottom:14px;}
+.tabs button{flex:1;border:none;background:transparent;padding:9px 6px;border-radius:9px;font-weight:700;font-size:13px;color:var(--text-dim);cursor:pointer;font-family:inherit;}
+.tabs button.active{background:var(--accent);color:#fff;}
+
+.searchbar{display:flex;gap:8px;margin-bottom:12px;}
+.searchbar input,.searchbar select{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 10px;color:var(--text);font-family:inherit;font-size:13px;}
+
+.daycard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:8px;cursor:pointer;}
+.daycard .top{display:flex;justify-content:space-between;align-items:center;}
+.daycard .d{font-weight:800;font-size:14px;}
+.daycard .n{font-weight:800;}
+.daycard .sub{display:flex;gap:10px;font-size:11px;color:var(--text-dim);margin-top:4px;}
+.daycard .details{margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);display:none;}
+.daycard.open .details{display:block;}
+
+.bars{display:flex;flex-direction:column;gap:10px;margin:6px 0 4px;}
+.barrow .lbl{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:4px;}
+.bartrack{height:10px;background:var(--surface2);border-radius:6px;overflow:hidden;}
+.barfill{height:100%;border-radius:6px;}
+
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+
+.plist{display:flex;flex-direction:column;gap:10px;}
+.pitem{background:var(--surface2);border-radius:12px;padding:12px;}
+.pitem .row1{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px;}
+.pitem .pmeta{font-size:11px;color:var(--text-dim);margin:4px 0 8px;}
+.progtrack{height:8px;background:var(--border);border-radius:5px;overflow:hidden;}
+.progfill{height:100%;border-radius:5px;background:var(--income);}
+.progfill.warn{background:var(--accent);}
+.progfill.danger{background:var(--expense);}
+.pitem .actions{display:flex;gap:8px;margin-top:8px;}
+.pitem .actions button{flex:1;font-size:12px;padding:6px;border-radius:8px;border:none;font-weight:700;cursor:pointer;}
+.pitem .actions .logbtn{background:var(--accent);color:#fff;}
+.pitem .actions .delbtn{background:var(--expense-soft);color:var(--expense);}
+
+.addlink{display:block;width:100%;text-align:center;background:var(--surface2);border:1px dashed var(--border);border-radius:12px;padding:10px;font-weight:700;font-size:13px;color:var(--accent);cursor:pointer;margin-bottom:10px;}
+
+.contactitem{display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+.contactitem .ci-info{flex:1;min-width:0;}
+.contactitem .ci-name{font-weight:700;font-size:14px;}
+.contactitem .ci-sub{font-size:11px;color:var(--text-dim);}
+.iconbtn{width:34px;height:34px;border-radius:50%;border:none;background:var(--accent-soft);color:var(--accent);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;text-decoration:none;}
+.iconbtn.del{background:var(--expense-soft);color:var(--expense);}
+
+.calc-display{background:var(--surface2);border-radius:12px;padding:16px;text-align:left;font-size:34px;font-weight:800;margin-bottom:10px;direction:ltr;overflow-x:auto;white-space:nowrap;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.calc-grid button{padding:16px 0;border-radius:12px;border:none;background:var(--surface2);color:var(--text);font-size:18px;font-weight:700;cursor:pointer;}
+.calc-grid button.op{background:var(--accent-soft);color:var(--accent);}
+.calc-grid button.eq{background:var(--accent);color:#fff;}
+.calc-grid button.clear{background:var(--expense-soft);color:var(--expense);}
+
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:15px;}
+.seg{display:flex;gap:8px;}
+.seg button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;}
+.seg button.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+.setting-row:last-child{border-bottom:none;}
+.setting-row .s-lbl{font-weight:700;font-size:14px;}
+.setting-row .s-sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.switch{width:46px;height:26px;background:var(--surface2);border-radius:20px;position:relative;cursor:pointer;border:1px solid var(--border);flex-shrink:0;}
+.switch .knob{width:20px;height:20px;background:var(--text-dim);border-radius:50%;position:absolute;top:2px;right:3px;transition:.2s;}
+.switch.on{background:var(--accent);}
+.switch.on .knob{right:23px;background:#fff;}
+.smallbtn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;}
+textarea.dump{width:100%;height:110px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text);font-family:monospace;font-size:11px;direction:ltr;text-align:left;}
+
+nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:10;background:var(--surface);border-top:1px solid var(--border);display:flex;max-width:480px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom);}
+nav.bottom button{flex:1;background:none;border:none;padding:9px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text-dim);cursor:pointer;font-family:inherit;}
+nav.bottom button .nic{font-size:19px;}
+nav.bottom button .nlbl{font-size:9.5px;font-weight:700;}
+nav.bottom button.active{color:var(--accent);}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:20;display:none;align-items:flex-end;justify-content:center;}
+.overlay.show{display:flex;}
+.sheet{background:var(--bg);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;}
+.sheet h2{margin:0 0 14px;font-size:17px;font-weight:800;}
+.sheet-actions{display:flex;gap:10px;margin-top:16px;}
+.sheet-actions button{flex:1;padding:12px;border-radius:10px;border:none;font-weight:700;font-size:14px;cursor:pointer;}
+.sheet-actions .cancel{background:var(--surface2);color:var(--text);}
+.sheet-actions .confirm{background:var(--accent);color:#fff;}
+.sheet-actions .danger{background:var(--expense);color:#fff;}
+
+#lock{position:fixed;inset:0;background:var(--bg);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+#lock.show{display:flex;}
+#lock .mark{width:60px;height:60px;border-radius:16px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--bg);}
+#lock .dots{display:flex;gap:12px;}
+#lock .dots span{width:14px;height:14px;border-radius:50%;border:2px solid var(--text-dim);}
+#lock .dots span.filled{background:var(--accent);border-color:var(--accent);}
+#lock .keypad{display:grid;grid-template-columns:repeat(3,64px);gap:14px;}
+#lock .keypad button{width:64px;height:64px;border-radius:50%;border:none;background:var(--surface2);color:var(--text);font-size:22px;font-weight:700;cursor:pointer;}
+#lock .err{color:var(--expense);font-size:12px;font-weight:700;height:14px;}
+</style>
+</head>
+<body data-theme="light">
+
+<div id="lock">
+  <div class="mark">🚗</div>
+  <div style="font-weight:800;font-size:16px;">أدخل رمز الدخول</div>
+  <div class="dots" id="lockDots"></div>
+  <div class="err" id="lockErr"></div>
+  <div class="keypad" id="lockKeypad"></div>
+</div>
+
+<div id="app">
+  <header class="top">
+    <div class="brand"><div class="mark">🚗</div><div class="name">مشواري</div></div>
+    <div class="todaydate" id="headerDate"></div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <div class="view active" id="view-home">
+      <div class="alerts" id="homeAlerts"></div>
+      <div class="datebar">
+        <span style="font-size:13px;font-weight:700;color:var(--text-dim);">📅 يوم التسجيل</span>
+        <input type="date" id="homeDate">
+      </div>
+      <div class="card">
+        <h3>ملخص اليوم</h3>
+        <div class="summary-grid">
+          <div class="stat income"><div class="lbl">إجمالي الدخل</div><div class="val" id="sumIncome">0</div></div>
+          <div class="stat expense"><div class="lbl">إجمالي المصروفات</div><div class="val" id="sumExpense">0</div></div>
+          <div class="stat net"><div class="lbl">صافي الربح</div><div class="val" id="sumNet">0</div></div>
+        </div>
+      </div>
+      <div class="bigbtns">
+        <button class="bigbtn inc" id="btnAddIncome"><span class="ic">🟢</span>+ دخل</button>
+        <button class="bigbtn exp" id="btnAddExpense"><span class="ic">🔴</span>+ مصروف</button>
+      </div>
+      <div class="card">
+        <h3>بيانات اليوم</h3>
+        <div class="meta-row">
+          <div><label>عدد الرحلات</label><input type="number" id="metaTrips" inputmode="numeric"></div>
+          <div><label>قراءة العداد (كم)</label><input type="number" id="metaOdo" inputmode="numeric"></div>
+          <div><label>ساعات العمل</label><input type="number" id="metaHours" inputmode="numeric" step="0.5"></div>
+        </div>
+        <button class="savebtn" id="saveMeta">حفظ بيانات اليوم</button>
+      </div>
+      <div class="card">
+        <h3>معاملات اليوم</h3>
+        <div class="txlist" id="homeTxList"></div>
+      </div>
+    </div>
+
+    <!-- LOG / REPORTS -->
+    <div class="view" id="view-log">
+      <div class="tabs" id="logTabs">
+        <button data-t="record" class="active">السجل</button>
+        <button data-t="reports">تقارير</button>
+      </div>
+      <div id="logRecord">
+        <div class="searchbar">
+          <input type="text" id="searchInput" placeholder="بحث بتاريخ أو ملاحظة...">
+          <select id="filterType"><option value="all">الكل</option><option value="income">دخل</option><option value="expense">مصروف</option></select>
+        </div>
+        <div id="dayList"></div>
+      </div>
+      <div id="logReports" style="display:none;">
+        <div class="tabs" id="periodTabs">
+          <button data-p="daily" class="active">يومي</button>
+          <button data-p="weekly">أسبوعي</button>
+          <button data-p="monthly">شهري</button>
+        </div>
+        <div class="card">
+          <h3 id="reportTitle">التقرير</h3>
+          <div class="bars" id="reportBars"></div>
+          <div class="kpi-grid">
+            <div class="stat"><div class="lbl">تكلفة الكيلومتر</div><div class="val" id="repCostKm">-</div></div>
+            <div class="stat"><div class="lbl">ربح الساعة</div><div class="val" id="repProfitHr">-</div></div>
+            <div class="stat"><div class="lbl">عدد الرحلات</div><div class="val" id="repTrips">-</div></div>
+            <div class="stat"><div class="lbl">متوسط صافي/يوم</div><div class="val" id="repAvgDay">-</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAINTENANCE -->
+    <div class="view" id="view-maint">
+      <div class="tabs" id="maintTabs">
+        <button data-t="parts" class="active">قطع الغيار</button>
+        <button data-t="reminders">تراخيص وتأمين</button>
+        <button data-t="log">سجل الصيانة</button>
+      </div>
+      <div id="maintParts">
+        <div class="addlink" id="addPartBtn">➕ إضافة قطعة غيار جديدة</div>
+        <div class="plist" id="partsList"></div>
+      </div>
+      <div id="maintReminders" style="display:none;">
+        <div class="addlink" id="addReminderBtn">➕ إضافة تذكير جديد (رخصة / فحص / تأمين)</div>
+        <div class="plist" id="remindersList"></div>
+      </div>
+      <div id="maintLog" style="display:none;">
+        <div class="plist" id="maintLogList"></div>
+      </div>
+    </div>
+
+    <!-- CONTACTS -->
+    <div class="view" id="view-contacts">
+      <div class="tabs" id="contactTabs">
+        <button data-t="suppliers" class="active">موردين وورش</button>
+        <button data-t="customers">عملاء</button>
+      </div>
+      <div id="contactSuppliers">
+        <div class="addlink" id="addSupplierBtn">➕ إضافة مورد / ورشة</div>
+        <div id="suppliersList"></div>
+      </div>
+      <div id="contactCustomers" style="display:none;">
+        <div class="addlink" id="addCustomerBtn">➕ إضافة عميل</div>
+        <div id="customersList"></div>
+      </div>
+    </div>
+
+    <!-- CALCULATOR -->
+    <div class="view" id="view-calc">
+      <div class="tabs" id="calcTabs">
+        <button data-t="basic" class="active">حاسبة عادية</button>
+        <button data-t="trip">تكلفة الرحلة</button>
+      </div>
+      <div id="calcBasic">
+        <div class="calc-display" id="calcDisplay">0</div>
+        <div class="calc-grid" id="calcGrid"></div>
+      </div>
+      <div id="calcTrip" style="display:none;">
+        <div class="card">
+          <div class="field"><label>المسافة (كم)</label><input type="number" id="tripDist" inputmode="decimal"></div>
+          <div class="field"><label>استهلاك السيارة (كم لكل لتر)</label><input type="number" id="tripCons" inputmode="decimal"></div>
+          <div class="field"><label>سعر اللتر (جنيه)</label><input type="number" id="tripPrice" inputmode="decimal"></div>
+          <div class="field"><label>الأجرة المتوقعة (اختياري)</label><input type="number" id="tripFare" inputmode="decimal"></div>
+          <button class="savebtn" id="tripCalcBtn">احسب</button>
+          <div class="kpi-grid" style="margin-top:12px;">
+            <div class="stat expense"><div class="lbl">تكلفة الوقود</div><div class="val" id="tripCost">-</div></div>
+            <div class="stat income"><div class="lbl">صافي الربح المتوقع</div><div class="val" id="tripProfit">-</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="view-settings">
+      <div class="card">
+        <div class="setting-row">
+          <div><div class="s-lbl">🔒 حماية برمز PIN</div><div class="s-sub">قفل التطبيق برمز من 4 أرقام</div></div>
+          <div class="switch" id="pinSwitch"><div class="knob"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="s-lbl">🌙 الوضع الليلي</div><div class="s-sub">مريح للعين أثناء القيادة ليلاً</div></div>
+          <div class="switch" id="darkSwitch"><div class="knob"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>💾 نسخ احتياطي واستعادة</h3>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button class="smallbtn" id="exportBtn" style="flex:1;">تصدير نسخة احتياطية</button>
+          <button class="smallbtn" id="importBtn" style="flex:1;">استيراد نسخة</button>
+        </div>
+        <textarea class="dump" id="backupText" placeholder="ستظهر بيانات النسخة الاحتياطية هنا..."></textarea>
+      </div>
+      <div class="card">
+        <h3>📤 تصدير البيانات</h3>
+        <button class="smallbtn" id="exportCsvBtn" style="width:100%;">تصدير Excel/CSV</button>
+      </div>
+    </div>
+  </main>
+
+  <nav class="bottom">
+    <button data-v="home" class="active"><span class="nic">🏠</span><span class="nlbl">الرئيسية</span></button>
+    <button data-v="log"><span class="nic">📊</span><span class="nlbl">السجل</span></button>
+    <button data-v="maint"><span class="nic">🔧</span><span class="nlbl">الصيانة</span></button>
+    <button data-v="contacts"><span class="nic">👥</span><span class="nlbl">جهات اتصال</span></button>
+    <button data-v="calc"><span class="nic">🧮</span><span class="nlbl">الحاسبة</span></button>
+    <button data-v="settings"><span class="nic">⚙️</span><span class="nlbl">إعدادات</span></button>
+  </nav>
+</div>
+
+<div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
+
+<script>
+// ---------- STATE ----------
+let state = {
+  pin: null, darkMode: false,
+  transactions: [], dailyMeta: {}, parts: [], maintenanceLog: [],
+  reminders: [], suppliers: [], customers: []
+};
+let selectedHomeDate = todayStr();
+let unlocked = false;
+let pinBuffer = '', pinSetupStage = null, pinSetupFirst = '';
+
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function fmt(n){ n = Number(n)||0; return n.toLocaleString('ar-EG',{maximumFractionDigits:1}); }
+function dateAr(str){ const d=new Date(str+'T00:00:00'); return d.toLocaleDateString('ar-EG',{weekday:'short',day:'numeric',month:'short'}); }
+
+let saveTimer=null;
+function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveData,350); }
+async function saveData(){ try{ await window.storage.set('meshwary-data', JSON.stringify(state)); }catch(e){ console.error('save failed',e); } }
+async function loadData(){
+  try{ const r = await window.storage.get('meshwary-data'); if(r && r.value){ state = Object.assign(state, JSON.parse(r.value)); } }
+  catch(e){ /* no data yet */ }
+}
+
+const EXPENSE_CATS = ['بنزين','غاز','صيانة','تغيير زيت','غسيل','مخالفات','شخصي','أخرى'];
+const INCOME_SOURCES = ['DiDi','توصيل طلاب'];
+
+// ---------- INIT ----------
+async function init(){
+  await loadData();
+  applyTheme();
+  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('homeDate').value = selectedHomeDate;
+  buildLockKeypad();
+  buildCalcGrid();
+  bindNav();
+  bindHome();
+  bindLog();
+  bindMaint();
+  bindContacts();
+  bindCalc();
+  bindSettings();
+  renderAll();
+  if(state.pin){ showLock(); } 
+}
+function applyTheme(){ document.body.setAttribute('data-theme', state.darkMode?'dark':'light'); document.querySelector('meta[name=theme-color]').setAttribute('content', state.darkMode?'#0F1620':'#0F1B2B'); }
+
+function renderAll(){ renderHome(); renderLogRecord(); renderReport(currentPeriod); renderParts(); renderReminders(); renderMaintLog(); renderSuppliers(); renderCustomers(); }
+
+// ---------- NAV ----------
+function bindNav(){
+  document.querySelectorAll('nav.bottom button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.bottom button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      document.getElementById('view-'+b.dataset.v).classList.add('active');
+    });
+  });
+}
+
+// ---------- SHEET (MODAL) ----------
+function openSheet(html){ document.getElementById('sheet').innerHTML = html; document.getElementById('overlay').classList.add('show'); }
+function closeSheet(){ document.getElementById('overlay').classList.remove('show'); }
+document.getElementById('overlay').addEventListener('click', e=>{ if(e.target.id==='overlay') closeSheet(); });
+
+// ---------- HOME ----------
+function bindHome(){
+  document.getElementById('homeDate').addEventListener('change', e=>{ selectedHomeDate = e.target.value; renderHome(); });
+  document.getElementById('btnAddIncome').addEventListener('click', ()=>openTxSheet('income'));
+  document.getElementById('btnAddExpense').addEventListener('click', ()=>openTxSheet('expense'));
+  document.getElementById('saveMeta').addEventListener('click', ()=>{
+    const trips = document.getElementById('metaTrips').value;
+    const odo = document.getElementById('metaOdo').value;
+    const hours = document.getElementById('metaHours').value;
+    state.dailyMeta[selectedHomeDate] = {
+      trips: trips?Number(trips):null, odometer: odo?Number(odo):null, hours: hours?Number(hours):null
+    };
+    scheduleSave(); renderHome();
+  });
+}
+function openTxSheet(type, existing){
+  const isInc = type==='income';
+  const options = isInc?INCOME_SOURCES:EXPENSE_CATS;
+  const optHtml = options.map(o=>`<option value="${o}" ${existing&&existing.category===o?'selected':''}>${o}</option>`).join('');
+  openSheet(`
+    <h2>${isInc?'🟢 إضافة دخل':'🔴 إضافة مصروف'}</h2>
+    <div class="field"><label>المبلغ (جنيه)</label><input type="number" id="txAmount" inputmode="decimal" value="${existing?existing.amount:''}" autofocus></div>
+    <div class="field"><label>${isInc?'المصدر':'النوع'}</label><select id="txCat">${optHtml}</select></div>
+    <div class="field"><label>ملاحظة (اختياري)</label><input type="text" id="txNote" value="${existing?(existing.note||''):''}"></div>
+    <div class="sheet-actions">
+      <button class="cancel" id="sheetCancel">إلغاء</button>
+      ${existing?'<button class="danger" id="sheetDelete">حذف</button>':''}
+      <button class="confirm" id="sheetSave">حفظ</button>
+    </div>
+  `);
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  if(existing) document.getElementById('sheetDelete').addEventListener('click', ()=>{
+    state.transactions = state.transactions.filter(t=>t.id!==existing.id);
+    scheduleSave(); closeSheet(); renderAll();
+  });
+  document.getElementById('sheetSave').addEventListener('click', ()=>{
+    const amount = Number(document.getElementById('txAmount').value)||0;
+    if(amount<=0){ return; }
+    const cat = document.getElementById('txCat').value;
+    const note = document.getElementById('txNote').value.trim();
+    if(existing){
+      existing.amount = amount; existing.category = cat; existing.note = note;
+    } else {
+      state.transactions.push({id:uid(), date:selectedHomeDate, type, amount, category:cat, note});
+    }
+    scheduleSave(); closeSheet(); renderAll();
+  });
+}
+function computeDay(date){
+  const txs = state.transactions.filter(t=>t.date===date);
+  const income = txs.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+  const expense = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+  return {income, expense, net:income-expense, txs};
+}
+function getAlerts(){
+  const alerts=[];
+  const curOdo = getCurrentOdometer();
+  if(curOdo!=null){
+    state.parts.forEach(p=>{
+      const used = curOdo - p.installOdometer;
+      const remaining = p.lifespanKm - used;
+      const pct = used/p.lifespanKm;
+      if(remaining<=0) alerts.push(`⛔ ${p.name}: جاوزت الموعد بـ ${fmt(Math.abs(remaining))} كم`);
+      else if(pct>=0.85) alerts.push(`⚠️ ${p.name}: باقي ${fmt(remaining)} كم على الموعد`);
+    });
+  }
+  const today = new Date();
+  state.reminders.forEach(r=>{
+    const d = new Date(r.date+'T00:00:00');
+    const days = Math.ceil((d-today)/86400000);
+    if(days<=30 && days>=-3650) alerts.push(days<0?`⛔ ${r.name} انتهى موعده`:`⏰ ${r.name} خلال ${days} يوم`);
+  });
+  return alerts;
+}
+function getCurrentOdometer(){
+  const dates = Object.keys(state.dailyMeta).filter(d=>state.dailyMeta[d] && state.dailyMeta[d].odometer!=null).sort();
+  if(!dates.length) return null;
+  return state.dailyMeta[dates[dates.length-1]].odometer;
+}
+function renderHome(){
+  const d = computeDay(selectedHomeDate);
+  document.getElementById('sumIncome').textContent = fmt(d.income);
+  document.getElementById('sumExpense').textContent = fmt(d.expense);
+  document.getElementById('sumNet').textContent = fmt(d.net);
+  document.getElementById('sumNet').style.color = d.net>=0?'var(--income)':'var(--expense)';
+  const meta = state.dailyMeta[selectedHomeDate]||{};
+  document.getElementById('metaTrips').value = meta.trips ?? '';
+  document.getElementById('metaOdo').value = meta.odometer ?? '';
+  document.getElementById('metaHours').value = meta.hours ?? '';
+  const alerts = getAlerts();
+  document.getElementById('homeAlerts').innerHTML = alerts.map(a=>`<div class="alert"><span class="ic">🔔</span>${a}</div>`).join('');
+  const list = document.getElementById('homeTxList');
+  if(!d.txs.length){ list.innerHTML = '<div class="empty">لا توجد معاملات في هذا اليوم</div>'; }
+  else {
+    list.innerHTML = d.txs.map(t=>`
+      <div class="txrow ${t.type==='income'?'inc':'exp'}" data-id="${t.id}">
+        <div class="dot"></div>
+        <div class="info"><div class="cat">${t.category}</div>${t.note?`<div class="note">${escapeHtml(t.note)}</div>`:''}</div>
+        <div class="amt">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+        <button class="del" data-del="${t.id}">✕</button>
+      </div>`).join('');
+    list.querySelectorAll('.txrow').forEach(row=>{
+      row.addEventListener('click', e=>{
+        if(e.target.dataset.del) return;
+        const tx = state.transactions.find(t=>t.id===row.dataset.id);
+        openTxSheet(tx.type, tx);
+      });
+    });
+    list.querySelectorAll('[data-del]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        e.stopPropagation();
+        state.transactions = state.transactions.filter(t=>t.id!==btn.dataset.del);
+        scheduleSave(); renderAll();
+      });
+    });
+  }
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// ---------- LOG / REPORTS ----------
+let currentPeriod = 'daily';
+function bindLog(){
+  document.querySelectorAll('#logTabs button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#logTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const t=b.dataset.t;
+      document.getElementById('logRecord').style.display = t==='record'?'block':'none';
+      document.getElementById('logReports').style.display = t==='reports'?'block':'none';
+    });
+  });
+  document.getElementById('searchInput').addEventListener('input', renderLogRecord);
+  document.getElementById('filterType').addEventListener('change', renderLogRecord);
+  document.querySelectorAll('#periodTabs button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#periodTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); currentPeriod=b.dataset.p; renderReport(currentPeriod);
+    });
+  });
+}
+function renderLogRecord(){
+  const q = (document.getElementById('searchInput').value||'').trim();
+  const ft = document.getElementById('filterType').value;
+  const dates = [...new Set(state.transactions.map(t=>t.date))].sort().reverse();
+  const el = document.getElementById('dayList');
+  const filteredDates = dates.filter(d=>{
+    if(q && !d.includes(q)){
+      const hasNote = state.transactions.some(t=>t.date===d && t.note && t.note.includes(q));
+      if(!hasNote) return false;
+    }
+    return true;
+  });
+  if(!filteredDates.length){ el.innerHTML = '<div class="empty">لا توجد بيانات</div>'; return; }
+  el.innerHTML = filteredDates.map(d=>{
+    const day = computeDay(d);
+    const txs = ft==='all'?day.txs:day.txs.filter(t=>t.type===ft);
+    return `<div class="daycard" data-d="${d}">
+      <div class="top"><div class="d">${dateAr(d)}</div><div class="n" style="color:${day.net>=0?'var(--income)':'var(--expense)'}">${fmt(day.net)}</div></div>
+      <div class="sub"><span>دخل ${fmt(day.income)}</span><span>مصروف ${fmt(day.expense)}</span></div>
+      <div class="details"><div class="txlist">${txs.map(t=>`
+        <div class="txrow ${t.type==='income'?'inc':'exp'}" data-id="${t.id}">
+          <div class="dot"></div><div class="info"><div class="cat">${t.category}</div>${t.note?`<div class="note">${escapeHtml(t.note)}</div>`:''}</div>
+          <div class="amt">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+        </div>`).join('') || '<div class="empty">لا شيء يطابق الفلتر</div>'}</div></div>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.daycard').forEach(card=>{
+    card.addEventListener('click', e=>{
+      if(e.target.closest('.txrow')){
+        const tx = state.transactions.find(t=>t.id===e.target.closest('.txrow').dataset.id);
+        if(tx){ openTxSheet(tx.type, tx); return; }
+      }
+      card.classList.toggle('open');
+    });
+  });
+}
+function periodRange(period){
+  const now = new Date(); let start, end=new Date(now);
+  if(period==='daily'){ start=new Date(selectedHomeDate+'T00:00:00'); end=start; }
+  else if(period==='weekly'){ start=new Date(now); start.setDate(now.getDate()-6); }
+  else { start=new Date(now.getFullYear(), now.getMonth(),1); }
+  const s = start.toISOString().slice(0,10), e = end.toISOString().slice(0,10);
+  return [s,e];
+}
+function renderReport(period){
+  const [s,e] = periodRange(period);
+  const txs = state.transactions.filter(t=>t.date>=s && t.date<=e);
+  const incDidi = txs.filter(t=>t.type==='income'&&t.category==='DiDi').reduce((a,t)=>a+t.amount,0);
+  const incStu = txs.filter(t=>t.type==='income'&&t.category==='توصيل طلاب').reduce((a,t)=>a+t.amount,0);
+  const exp = txs.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+  const net = incDidi+incStu-exp;
+  const metaEntries = Object.keys(state.dailyMeta).filter(d=>d>=s&&d<=e).sort().map(d=>state.dailyMeta[d]);
+  const hours = metaEntries.reduce((a,m)=>a+(m.hours||0),0);
+  const trips = metaEntries.reduce((a,m)=>a+(m.trips||0),0);
+  const odoVals = metaEntries.filter(m=>m.odometer!=null).map(m=>m.odometer);
+  const km = odoVals.length>=2 ? (odoVals[odoVals.length-1]-odoVals[0]) : null;
+  const days = (new Date(e)-new Date(s))/86400000 + 1;
+  const titles = {daily:'التقرير اليومي', weekly:'التقرير الأسبوعي (آخر 7 أيام)', monthly:'التقرير الشهري'};
+  document.getElementById('reportTitle').textContent = titles[period];
+  const max = Math.max(incDidi, incStu, exp, 1);
+  document.getElementById('reportBars').innerHTML = [
+    ['دخل DiDi', incDidi, 'var(--income)'], ['دخل الطلاب', incStu, 'var(--accent)'], ['المصروفات', exp, 'var(--expense)']
+  ].map(([l,v,c])=>`<div class="barrow"><div class="lbl"><span>${l}</span><span>${fmt(v)}</span></div><div class="bartrack"><div class="barfill" style="width:${(v/max*100)}%;background:${c};"></div></div></div>`).join('')
+  + `<div class="barrow"><div class="lbl"><span>صافي الربح</span><span style="color:${net>=0?'var(--income)':'var(--expense)'}">${fmt(net)}</span></div></div>`;
+  document.getElementById('repCostKm').textContent = km&&km>0 ? fmt(exp/km) : '-';
+  document.getElementById('repProfitHr').textContent = hours>0 ? fmt(net/hours) : '-';
+  document.getElementById('repTrips').textContent = trips||0;
+  document.getElementById('repAvgDay').textContent = fmt(net/days);
+}
+
+// ---------- MAINTENANCE ----------
+function bindMaint(){
+  document.querySelectorAll('#maintTabs button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#maintTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      ['parts','reminders','log'].forEach(t=>document.getElementById('maint'+cap(t)).style.display = t===b.dataset.t?'block':'none');
+    });
+  });
+  document.getElementById('addPartBtn').addEventListener('click', ()=>openPartSheet());
+  document.getElementById('addReminderBtn').addEventListener('click', ()=>openReminderSheet());
+}
+function cap(s){ return s[0].toUpperCase()+s.slice(1); }
+function openPartSheet(){
+  openSheet(`
+    <h2>➕ إضافة قطعة غيار</h2>
+    <div class="field"><label>اسم القطعة</label><input type="text" id="pName"></div>
+    <div class="field"><label>تاريخ التركيب</label><input type="date" id="pDate" value="${todayStr()}"></div>
+    <div class="field"><label>قراءة العداد عند التركيب (كم)</label><input type="number" id="pOdo" value="${getCurrentOdometer()||''}"></div>
+    <div class="field"><label>العمر الافتراضي (كم)</label><input type="number" id="pLife" placeholder="مثال: 5000"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+  `);
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  document.getElementById('sheetSave').addEventListener('click', ()=>{
+    const name = document.getElementById('pName').value.trim();
+    if(!name) return;
+    state.parts.push({id:uid(), name, installDate:document.getElementById('pDate').value, installOdometer:Number(document.getElementById('pOdo').value)||0, lifespanKm:Number(document.getElementById('pLife').value)||0});
+    scheduleSave(); closeSheet(); renderParts(); renderHome();
+  });
+}
+function renderParts(){
+  const curOdo = getCurrentOdometer();
+  const el = document.getElementById('partsList');
+  if(!state.parts.length){ el.innerHTML='<div class="empty">لا توجد قطع مسجّلة</div>'; return; }
+  el.innerHTML = state.parts.map(p=>{
+    const used = curOdo!=null ? curOdo-p.installOdometer : 0;
+    const remaining = p.lifespanKm - used;
+    const pct = p.lifespanKm ? Math.min(100, Math.max(0,(used/p.lifespanKm*100))) : 0;
+    const cls = pct>=90?'danger':pct>=70?'warn':'';
+    return `<div class="pitem">
+      <div class="row1"><span>${p.name}</span><span>${pct.toFixed(0)}%</span></div>
+      <div class="pmeta">تركيب: ${dateAr(p.installDate)} @ ${fmt(p.installOdometer)} كم · العمر: ${fmt(p.lifespanKm)} كم</div>
+      <div class="pmeta" style="margin-top:-4px;font-weight:700;color:${remaining<=0?'var(--expense)':remaining<=p.lifespanKm*0.15?'var(--accent)':'var(--text)'}">${curOdo==null?'سجّل قراءة العداد اليوم لمتابعة الموعد':remaining<=0?`جاوزت الموعد بـ ${fmt(Math.abs(remaining))} كم`:`باقي ${fmt(remaining)} كم`}</div>
+      <div class="progtrack"><div class="progfill ${cls}" style="width:${pct}%"></div></div>
+      <div class="actions">
+        <button class="logbtn" data-log="${p.id}">تسجيل تغيير</button>
+        <button class="delbtn" data-del="${p.id}">حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('[data-log]').forEach(b=>b.addEventListener('click', ()=>logPartChange(b.dataset.log)));
+  el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
+    state.parts = state.parts.filter(p=>p.id!==b.dataset.del); scheduleSave(); renderParts();
+  }));
+}
+function logPartChange(partId){
+  const part = state.parts.find(p=>p.id===partId);
+  openSheet(`
+    <h2>تسجيل تغيير: ${part.name}</h2>
+    <div class="field"><label>تاريخ التغيير</label><input type="date" id="lDate" value="${todayStr()}"></div>
+    <div class="field"><label>التكلفة (جنيه)</label><input type="number" id="lCost"></div>
+    <div class="field"><label>قراءة العداد الحالية</label><input type="number" id="lOdo" value="${getCurrentOdometer()||''}"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+  `);
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  document.getElementById('sheetSave').addEventListener('click', ()=>{
+    const odo = Number(document.getElementById('lOdo').value)||part.installOdometer;
+    state.maintenanceLog.push({id:uid(), partId:part.id, partName:part.name, date:document.getElementById('lDate').value, cost:Number(document.getElementById('lCost').value)||0, odometer:odo});
+    part.installDate = document.getElementById('lDate').value; part.installOdometer = odo;
+    scheduleSave(); closeSheet(); renderParts(); renderMaintLog();
+  });
+}
+function renderMaintLog(){
+  const el = document.getElementById('maintLogList');
+  if(!state.maintenanceLog.length){ el.innerHTML='<div class="empty">لا يوجد سجل صيانة بعد</div>'; return; }
+  const sorted = [...state.maintenanceLog].sort((a,b)=>b.date.localeCompare(a.date));
+  el.innerHTML = sorted.map(l=>`<div class="pitem"><div class="row1"><span>${l.partName}</span><span>${fmt(l.cost)} ج</span></div><div class="pmeta">${dateAr(l.date)} · عند ${fmt(l.odometer)} كم</div></div>`).join('');
+}
+function openReminderSheet(){
+  openSheet(`
+    <h2>➕ إضافة تذكير</h2>
+    <div class="field"><label>النوع</label><select id="rType"><option value="رخصة">رخصة القيادة</option><option value="فحص دوري">فحص دوري</option><option value="تأمين">تأمين</option><option value="أخرى">أخرى</option></select></div>
+    <div class="field"><label>اسم/تفاصيل</label><input type="text" id="rName" placeholder="مثال: رخصة السيارة"></div>
+    <div class="field"><label>تاريخ الاستحقاق</label><input type="date" id="rDate"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+  `);
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  document.getElementById('sheetSave').addEventListener('click', ()=>{
+    const type = document.getElementById('rType').value;
+    const name = document.getElementById('rName').value.trim() || type;
+    const date = document.getElementById('rDate').value;
+    if(!date) return;
+    state.reminders.push({id:uid(), type, name, date});
+    scheduleSave(); closeSheet(); renderReminders(); renderHome();
+  });
+}
+function renderReminders(){
+  const el = document.getElementById('remindersList');
+  if(!state.reminders.length){ el.innerHTML='<div class="empty">لا توجد تذكيرات</div>'; return; }
+  const today = new Date();
+  const sorted = [...state.reminders].sort((a,b)=>a.date.localeCompare(b.date));
+  el.innerHTML = sorted.map(r=>{
+    const days = Math.ceil((new Date(r.date+'T00:00:00')-today)/86400000);
+    const color = days<0?'var(--expense)':days<=30?'var(--accent)':'var(--income)';
+    return `<div class="pitem"><div class="row1"><span>${r.name}</span><span style="color:${color}">${days<0?'منتهي':days+' يوم'}</span></div><div class="pmeta">${r.type} · ${dateAr(r.date)}</div>
+      <div class="actions"><button class="delbtn" data-del="${r.id}" style="flex:1;">حذف</button></div></div>`;
+  }).join('');
+  el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
+    state.reminders = state.reminders.filter(r=>r.id!==b.dataset.del); scheduleSave(); renderReminders(); renderHome();
+  }));
+}
+
+// ---------- CONTACTS ----------
+function bindContacts(){
+  document.querySelectorAll('#contactTabs button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#contactTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      document.getElementById('contactSuppliers').style.display = b.dataset.t==='suppliers'?'block':'none';
+      document.getElementById('contactCustomers').style.display = b.dataset.t==='customers'?'block':'none';
+    });
+  });
+  document.getElementById('addSupplierBtn').addEventListener('click', ()=>openSupplierSheet());
+  document.getElementById('addCustomerBtn').addEventListener('click', ()=>openCustomerSheet());
+}
+function openSupplierSheet(){
+  openSheet(`
+    <h2>➕ إضافة مورد / ورشة</h2>
+    <div class="field"><label>الاسم</label><input type="text" id="sName"></div>
+    <div class="field"><label>رقم الهاتف</label><input type="tel" id="sPhone"></div>
+    <div class="field"><label>العنوان</label><input type="text" id="sAddr"></div>
+    <div class="field"><label>التخصص</label><input type="text" id="sSpec" placeholder="مثال: كهرباء، ميكانيكا"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+  `);
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  document.getElementById('sheetSave').addEventListener('click', ()=>{
+    const name=document.getElementById('sName').value.trim(); if(!name) return;
+    state.suppliers.push({id:uid(), name, phone:document.getElementById('sPhone').value.trim(), address:document.getElementById('sAddr').value.trim(), specialty:document.getElementById('sSpec').value.trim()});
+    scheduleSave(); closeSheet(); renderSuppliers();
+  });
+}
+function renderSuppliers(){
+  const el = document.getElementById('suppliersList');
+  if(!state.suppliers.length){ el.innerHTML='<div class="empty">لا يوجد موردين بعد</div>'; return; }
+  el.innerHTML = state.suppliers.map(s=>`
+    <div class="contactitem">
+      <div class="ci-info"><div class="ci-name">${escapeHtml(s.name)}</div><div class="ci-sub">${escapeHtml(s.specialty||'')}</div></div>
+      ${s.phone?`<a class="iconbtn" href="tel:${s.phone}">📞</a>`:''}
+      ${s.address?`<a class="iconbtn" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.address)}" target="_blank">🗺️</a>`:''}
+      <button class="iconbtn del" data-del="${s.id}">✕</button>
+    </div>`).join('');
+  el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
+    state.suppliers = state.suppliers.filter(s=>s.id!==b.dataset.del); scheduleSave(); renderSuppliers();
+  }));
+}
+function openCustomerSheet(){
+  openSheet(`
+    <h2>➕ إضافة عميل</h2>
+    <div class="field"><label>الاسم</label><input type="text" id="cName"></div>
+    <div class="field"><label>رقم الهاتف</label><input type="tel" id="cPhone"></div>
+    <div class="field"><label>ملاحظات</label><input type="text" id="cNote"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+  `);
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  document.getElementById('sheetSave').addEventListener('click', ()=>{
+    const name=document.getElementById('cName').value.trim(); if(!name) return;
+    state.customers.push({id:uid(), name, phone:document.getElementById('cPhone').value.trim(), notes:document.getElementById('cNote').value.trim()});
+    scheduleSave(); closeSheet(); renderCustomers();
+  });
+}
+function renderCustomers(){
+  const el = document.getElementById('customersList');
+  if(!state.customers.length){ el.innerHTML='<div class="empty">لا يوجد عملاء بعد</div>'; return; }
+  el.innerHTML = state.customers.map(c=>`
+    <div class="contactitem">
+      <div class="ci-info"><div class="ci-name">${escapeHtml(c.name)}</div><div class="ci-sub">${escapeHtml(c.notes||'')}</div></div>
+      ${c.phone?`<a class="iconbtn" href="tel:${c.phone}">📞</a>`:''}
+      <button class="iconbtn del" data-del="${c.id}">✕</button>
+    </div>`).join('');
+  el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
+    state.customers = state.customers.filter(c=>c.id!==b.dataset.del); scheduleSave(); renderCustomers();
+  }));
+}
+
+// ---------- CALCULATOR ----------
+function bindCalc(){
+  document.querySelectorAll('#calcTabs button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#calcTabs button').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      document.getElementById('calcBasic').style.display = b.dataset.t==='basic'?'block':'none';
+      document.getElementById('calcTrip').style.display = b.dataset.t==='trip'?'block':'none';
+    });
+  });
+  document.getElementById('tripCalcBtn').addEventListener('click', ()=>{
+    const dist=Number(document.getElementById('tripDist').value)||0;
+    const cons=Number(document.getElementById('tripCons').value)||1;
+    const price=Number(document.getElementById('tripPrice').value)||0;
+    const fare=Number(document.getElementById('tripFare').value)||0;
+    const cost = (dist/cons)*price;
+    document.getElementById('tripCost').textContent = fmt(cost);
+    document.getElementById('tripProfit').textContent = fare? fmt(fare-cost) : '-';
+  });
+}
+let calcExpr = '';
+function buildCalcGrid(){
+  const keys = ['C','%','⌫','÷','7','8','9','×','4','5','6','−','1','2','3','+','0','.','=',''];
+  const grid = document.getElementById('calcGrid');
+  grid.innerHTML = keys.filter(k=>k!=='').map(k=>{
+    let cls = '';
+    if(['÷','×','−','+','%'].includes(k)) cls='op';
+    if(k==='=') cls='eq';
+    if(k==='C') cls='clear';
+    return `<button class="${cls}" data-k="${k}" ${k==='='?'style="grid-column:span 1;"':''}>${k}</button>`;
+  }).join('');
+  grid.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>calcPress(b.dataset.k)));
+}
+function calcPress(k){
+  const disp = document.getElementById('calcDisplay');
+  if(k==='C'){ calcExpr=''; disp.textContent='0'; return; }
+  if(k==='⌫'){ calcExpr=calcExpr.slice(0,-1); disp.textContent=calcExpr||'0'; return; }
+  if(k==='='){
+    try{
+      const safe = calcExpr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/%/g,'/100');
+      const result = Function('"use strict";return ('+safe+')')();
+      disp.textContent = Number.isFinite(result) ? (Math.round(result*10000)/10000).toString() : 'خطأ';
+      calcExpr = Number.isFinite(result) ? result.toString() : '';
+    }catch(e){ disp.textContent='خطأ'; calcExpr=''; }
+    return;
+  }
+  calcExpr += k; disp.textContent = calcExpr;
+}
+
+// ---------- SETTINGS ----------
+function bindSettings(){
+  const pinSw = document.getElementById('pinSwitch');
+  const darkSw = document.getElementById('darkSwitch');
+  pinSw.classList.toggle('on', !!state.pin);
+  darkSw.classList.toggle('on', !!state.darkMode);
+  pinSw.addEventListener('click', ()=>{
+    if(state.pin){ state.pin=null; scheduleSave(); pinSw.classList.remove('on'); }
+    else{ startPinSetup(); }
+  });
+  darkSw.addEventListener('click', ()=>{
+    state.darkMode = !state.darkMode; applyTheme(); scheduleSave(); darkSw.classList.toggle('on', state.darkMode);
+  });
+  document.getElementById('exportBtn').addEventListener('click', ()=>{
+    document.getElementById('backupText').value = JSON.stringify(state, null, 2);
+  });
+  document.getElementById('importBtn').addEventListener('click', ()=>{
+    const txt = document.getElementById('backupText').value.trim();
+    if(!txt) return;
+    try{ const parsed = JSON.parse(txt); state = Object.assign(state, parsed); scheduleSave(); applyTheme(); renderAll();
+      pinSw.classList.toggle('on', !!state.pin); darkSw.classList.toggle('on', !!state.darkMode);
+      alertMsg('تم استيراد النسخة الاحتياطية بنجاح');
+    }catch(e){ alertMsg('صيغة غير صحيحة'); }
+  });
+  document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+}
+function alertMsg(m){
+  openSheet(`<h2>${m}</h2><div class="sheet-actions"><button class="confirm" id="sheetOk" style="flex:1;">تمام</button></div>`);
+  document.getElementById('sheetOk').addEventListener('click', closeSheet);
+}
+function exportCsv(){
+  let csv = 'التاريخ,النوع,الفئة,المبلغ,ملاحظة\n';
+  [...state.transactions].sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{
+    csv += `${t.date},${t.type==='income'?'دخل':'مصروف'},${t.category},${t.amount},"${(t.note||'').replace(/"/g,'""')}"\n`;
+  });
+  try{
+    const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download='meshwary-export.csv'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 3000);
+  }catch(e){
+    document.getElementById('backupText').value = csv;
+    alertMsg('تعذر التحميل المباشر - تم وضع البيانات في مربع النص بالأسفل');
+  }
+}
+
+// ---------- PIN LOCK ----------
+function buildLockKeypad(){
+  const keys = ['1','2','3','4','5','6','7','8','9','مسح','0','حذف'];
+  document.getElementById('lockKeypad').innerHTML = keys.map(k=>`<button data-k="${k}">${k}</button>`).join('');
+  document.querySelectorAll('#lockKeypad button').forEach(b=>b.addEventListener('click', ()=>lockPress(b.dataset.k)));
+}
+function showLock(){ document.getElementById('lock').classList.add('show'); pinBuffer=''; updateLockDots(); }
+function hideLock(){ document.getElementById('lock').classList.remove('show'); }
+function updateLockDots(){
+  document.getElementById('lockDots').innerHTML = [0,1,2,3].map(i=>`<span class="${i<pinBuffer.length?'filled':''}"></span>`).join('');
+}
+function lockPress(k){
+  const err = document.getElementById('lockErr');
+  if(k==='مسح'){ pinBuffer=''; err.textContent=''; updateLockDots(); return; }
+  if(k==='حذف'){ pinBuffer=pinBuffer.slice(0,-1); updateLockDots(); return; }
+  if(pinBuffer.length>=4) return;
+  pinBuffer += k; updateLockDots();
+  if(pinBuffer.length===4){
+    if(pinSetupStage){ handlePinSetup(); return; }
+    if(pinBuffer===state.pin){ err.textContent=''; hideLock(); }
+    else{ err.textContent='رمز غير صحيح'; setTimeout(()=>{ pinBuffer=''; updateLockDots(); },500); }
+  }
+}
+function startPinSetup(){ pinSetupStage='first'; pinSetupFirst=''; pinBuffer=''; document.getElementById('lockErr').textContent=''; showLock(); }
+function handlePinSetup(){
+  const err = document.getElementById('lockErr');
+  if(pinSetupStage==='first'){ pinSetupFirst=pinBuffer; pinBuffer=''; pinSetupStage='confirm'; err.textContent='أكّد الرمز'; updateLockDots(); }
+  else{
+    if(pinBuffer===pinSetupFirst){ state.pin=pinBuffer; scheduleSave(); pinSetupStage=null; err.textContent=''; hideLock(); document.getElementById('pinSwitch').classList.add('on'); }
+    else{ err.textContent='الرمزين غير متطابقين، حاول تاني'; pinSetupStage='first'; pinBuffer=''; setTimeout(()=>updateLockDots(),400); }
+  }
+}
+
+init();
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+</script>
+</body>
+</html>
