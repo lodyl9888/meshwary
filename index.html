@@ -14,6 +14,7 @@
 <title>مشواري</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
   --bg:#F1EFE8; --surface:#FFFFFF; --surface2:#E7E3D8; --text:#211D16; --text-dim:#7A7466;
@@ -340,6 +341,24 @@ nav.bottom button.active{color:var(--accent);}
         </div>
       </div>
       <div class="card">
+        <h3>☁️ ربط Google Drive (نسخ احتياطي تلقائي)</h3>
+        <div id="gdriveSetup">
+          <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px;">أول مرة بس: الصق Google Client ID اللي عملته (شوف التعليمات)</p>
+          <div class="field"><label>Google Client ID</label><input type="text" id="gClientId" placeholder="xxxxxxxx.apps.googleusercontent.com"></div>
+          <button class="savebtn" id="saveClientId">حفظ</button>
+        </div>
+        <div id="gdriveConnected" style="display:none;">
+          <div class="setting-row">
+            <div><div class="s-lbl" id="gAccountLbl">متصل بحساب Google</div><div class="s-sub" id="gLastBackup">لا يوجد نسخة احتياطية بعد</div></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="smallbtn" id="gBackupBtn" style="flex:1;">نسخ احتياطي الآن</button>
+            <button class="smallbtn" id="gRestoreBtn" style="flex:1;">استرجاع من Drive</button>
+          </div>
+        </div>
+        <button class="smallbtn" id="gSignInBtn" style="width:100%;margin-top:10px;">🔐 تسجيل الدخول بـ Google</button>
+      </div>
+      <div class="card">
         <h3>💾 نسخ احتياطي واستعادة</h3>
         <div style="display:flex;gap:8px;margin-bottom:10px;">
           <button class="smallbtn" id="exportBtn" style="flex:1;">تصدير نسخة احتياطية</button>
@@ -384,9 +403,9 @@ function dateAr(str){ const d=new Date(str+'T00:00:00'); return d.toLocaleDateSt
 
 let saveTimer=null;
 function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveData,350); }
-async function saveData(){ try{ await window.storage.set('meshwary-data', JSON.stringify(state)); }catch(e){ console.error('save failed',e); } }
+async function saveData(){ try{ localStorage.setItem('meshwary-data', JSON.stringify(state)); }catch(e){ console.error('save failed',e); } }
 async function loadData(){
-  try{ const r = await window.storage.get('meshwary-data'); if(r && r.value){ state = Object.assign(state, JSON.parse(r.value)); } }
+  try{ const raw = localStorage.getItem('meshwary-data'); if(raw){ state = Object.assign(state, JSON.parse(raw)); } }
   catch(e){ /* no data yet */ }
 }
 
@@ -408,6 +427,7 @@ async function init(){
   bindContacts();
   bindCalc();
   bindSettings();
+  gdriveInit();
   renderAll();
   if(state.pin){ showLock(); } 
 }
@@ -952,6 +972,90 @@ function handlePinSetup(){
     if(pinBuffer===pinSetupFirst){ state.pin=pinBuffer; scheduleSave(); pinSetupStage=null; err.textContent=''; hideLock(); document.getElementById('pinSwitch').classList.add('on'); }
     else{ err.textContent='الرمزين غير متطابقين، حاول تاني'; pinSetupStage='first'; pinBuffer=''; setTimeout(()=>updateLockDots(),400); }
   }
+}
+
+// ---------- GOOGLE DRIVE BACKUP ----------
+let gTokenClient = null, gAccessToken = null, gTokenExpiry = 0;
+function gdriveInit(){
+  const idEl = document.getElementById('gClientId');
+  if(state.googleClientId) idEl.value = state.googleClientId;
+  document.getElementById('saveClientId').addEventListener('click', ()=>{
+    state.googleClientId = document.getElementById('gClientId').value.trim();
+    scheduleSave();
+    alertMsg('تم الحفظ، دوس تسجيل الدخول بـ Google دلوقتي');
+  });
+  document.getElementById('gSignInBtn').addEventListener('click', gdriveSignIn);
+  document.getElementById('gBackupBtn').addEventListener('click', gdriveBackup);
+  document.getElementById('gRestoreBtn').addEventListener('click', gdriveRestore);
+  if(state.gLastBackup) document.getElementById('gLastBackup').textContent = 'آخر نسخة احتياطية: '+state.gLastBackup;
+}
+function gdriveSignIn(){
+  if(!state.googleClientId){ alertMsg('محتاج تحط Google Client ID الأول واحفظه'); return; }
+  if(typeof google==='undefined' || !google.accounts){ alertMsg('تعذر تحميل خدمة تسجيل الدخول من Google، تأكد من الإنترنت'); return; }
+  gTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: state.googleClientId,
+    scope: 'https://www.googleapis.com/auth/drive.file',
+    callback: (resp)=>{
+      if(resp.error){ alertMsg('تعذر تسجيل الدخول: '+resp.error); return; }
+      gAccessToken = resp.access_token;
+      gTokenExpiry = Date.now() + (resp.expires_in*1000);
+      document.getElementById('gdriveSetup').style.display='none';
+      document.getElementById('gdriveConnected').style.display='block';
+      document.getElementById('gSignInBtn').textContent='🔓 تسجيل خروج / تبديل الحساب';
+    }
+  });
+  gTokenClient.requestAccessToken();
+}
+async function gdriveEnsureToken(){
+  if(gAccessToken && Date.now() < gTokenExpiry-5000) return true;
+  return new Promise(resolve=>{
+    gTokenClient.callback = (resp)=>{
+      if(resp.error){ resolve(false); return; }
+      gAccessToken = resp.access_token; gTokenExpiry = Date.now()+(resp.expires_in*1000); resolve(true);
+    };
+    gTokenClient.requestAccessToken({prompt:''});
+  });
+}
+async function gdriveFindFile(){
+  const res = await fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'meshwary-backup.json'%20and%20trashed%3Dfalse&spaces=drive&fields=files(id,name)", {headers:{Authorization:'Bearer '+gAccessToken}});
+  const data = await res.json();
+  return (data.files && data.files[0]) ? data.files[0].id : null;
+}
+async function gdriveBackup(){
+  if(!(await gdriveEnsureToken())){ alertMsg('محتاج تسجل الدخول تاني'); return; }
+  try{
+    const fileId = await gdriveFindFile();
+    const metadata = {name:'meshwary-backup.json', mimeType:'application/json'};
+    const boundary = 'meshwary_boundary';
+    const body = `--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(state)}\r\n--${boundary}--`;
+    const url = fileId
+      ? `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`
+      : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+    const res = await fetch(url, {
+      method: fileId?'PATCH':'POST',
+      headers: {Authorization:'Bearer '+gAccessToken, 'Content-Type':`multipart/related; boundary=${boundary}`},
+      body
+    });
+    if(!res.ok) throw new Error('upload failed');
+    const now = new Date().toLocaleString('ar-EG');
+    state.gLastBackup = now; scheduleSave();
+    document.getElementById('gLastBackup').textContent = 'آخر نسخة احتياطية: '+now;
+    alertMsg('تم النسخ الاحتياطي بنجاح ✅');
+  }catch(e){ alertMsg('حصل خطأ أثناء النسخ الاحتياطي، حاول تاني'); }
+}
+async function gdriveRestore(){
+  if(!(await gdriveEnsureToken())){ alertMsg('محتاج تسجل الدخول تاني'); return; }
+  try{
+    const fileId = await gdriveFindFile();
+    if(!fileId){ alertMsg('لا يوجد نسخة احتياطية محفوظة على Drive'); return; }
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {headers:{Authorization:'Bearer '+gAccessToken}});
+    const data = await res.json();
+    state = Object.assign(state, data);
+    scheduleSave(); applyTheme(); renderAll();
+    document.getElementById('pinSwitch').classList.toggle('on', !!state.pin);
+    document.getElementById('darkSwitch').classList.toggle('on', !!state.darkMode);
+    alertMsg('تم الاسترجاع من Drive بنجاح ✅');
+  }catch(e){ alertMsg('حصل خطأ أثناء الاسترجاع، حاول تاني'); }
 }
 
 init();
