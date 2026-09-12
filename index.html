@@ -197,7 +197,10 @@ nav.bottom button.active{color:var(--accent);}
 <div id="app">
   <header class="top">
     <div class="brand"><div class="mark">🚗</div><div class="name">مشواري</div></div>
-    <div class="todaydate" id="headerDate"></div>
+    <div style="text-align:left;">
+      <div class="todaydate" id="headerDate"></div>
+      <div id="monthNetBadge" style="font-size:13px;font-weight:800;margin-top:2px;"></div>
+    </div>
   </header>
 
   <main>
@@ -216,6 +219,16 @@ nav.bottom button.active{color:var(--accent);}
           <div class="stat net"><div class="lbl">صافي الربح</div><div class="val" id="sumNet">0</div></div>
         </div>
       </div>
+      <div class="card" id="tripCard">
+        <h3>⏱️ رحلة حالية</h3>
+        <div id="tripIdle">
+          <button class="bigbtn inc" id="btnStartTrip" style="width:100%;"><span class="ic">▶️</span>بدء رحلة</button>
+        </div>
+        <div id="tripActive" style="display:none;">
+          <div style="text-align:center;font-size:32px;font-weight:900;font-variant-numeric:tabular-nums;margin-bottom:10px;" id="tripTimer">00:00:00</div>
+          <button class="bigbtn exp" id="btnEndTrip" style="width:100%;"><span class="ic">⏹️</span>إنهاء الرحلة</button>
+        </div>
+      </div>
       <div class="bigbtns">
         <button class="bigbtn inc" id="btnAddIncome"><span class="ic">🟢</span>+ دخل</button>
         <button class="bigbtn exp" id="btnAddExpense"><span class="ic">🔴</span>+ مصروف</button>
@@ -228,6 +241,11 @@ nav.bottom button.active{color:var(--accent);}
           <div><label>ساعات العمل</label><input type="number" id="metaHours" inputmode="numeric" step="0.5"></div>
         </div>
         <button class="savebtn" id="saveMeta">حفظ بيانات اليوم</button>
+      </div>
+      <div class="card">
+        <h3>🎙️ ملاحظات صوتية</h3>
+        <button class="bigbtn" id="btnRecordVoice" style="width:100%;background:var(--accent);"><span class="ic" id="recIcon">🎙️</span><span id="recLabel">بدء تسجيل</span></button>
+        <div id="voiceList" style="margin-top:10px;"></div>
       </div>
       <div class="card">
         <h3>معاملات اليوم</h3>
@@ -391,7 +409,7 @@ nav.bottom button.active{color:var(--accent);}
 let state = {
   pin: null, darkMode: false,
   transactions: [], dailyMeta: {}, parts: [], maintenanceLog: [],
-  reminders: [], suppliers: [], customers: []
+  reminders: [], suppliers: [], customers: [], voiceNotes: [], tripStart: null
 };
 let selectedHomeDate = todayStr();
 let unlocked = false;
@@ -411,7 +429,7 @@ async function loadData(){
 }
 
 const EXPENSE_CATS = ['بنزين','غاز','صيانة','تغيير زيت','غسيل','مخالفات','شخصي','أخرى'];
-const INCOME_SOURCES = ['DiDi','توصيل طلاب'];
+const INCOME_SOURCES = ['DiDi','توصيل طلاب','مشوار شخصي'];
 
 // ---------- INIT ----------
 async function init(){
@@ -423,6 +441,8 @@ async function init(){
   buildCalcGrid();
   bindNav();
   bindHome();
+  bindTrip();
+  bindVoice();
   bindLog();
   bindMaint();
   bindContacts();
@@ -434,7 +454,18 @@ async function init(){
 }
 function applyTheme(){ document.body.setAttribute('data-theme', state.darkMode?'dark':'light'); document.querySelector('meta[name=theme-color]').setAttribute('content', state.darkMode?'#0F1620':'#0F1B2B'); }
 
-function renderAll(){ renderHome(); renderLogRecord(); renderReport(currentPeriod); renderParts(); renderReminders(); renderMaintLog(); renderSuppliers(); renderCustomers(); }
+function renderAll(){ renderHome(); renderLogRecord(); renderReport(currentPeriod); renderParts(); renderReminders(); renderMaintLog(); renderSuppliers(); renderCustomers(); renderMonthBadge(); }
+function renderMonthBadge(){
+  const now = new Date();
+  const s = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
+  const e = now.toISOString().slice(0,10);
+  const txs = state.transactions.filter(t=>t.date>=s && t.date<=e);
+  const inc = txs.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+  const exp = txs.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+  const net = inc-exp;
+  const el = document.getElementById('monthNetBadge');
+  if(el) el.innerHTML = `صافي الشهر: <span style="color:${net>=0?'var(--income)':'var(--expense)'}">${fmt(net)}</span>`;
+}
 
 // ---------- NAV ----------
 function bindNav(){
@@ -538,6 +569,7 @@ function renderHome(){
   document.getElementById('sumExpense').textContent = fmt(d.expense);
   document.getElementById('sumNet').textContent = fmt(d.net);
   document.getElementById('sumNet').style.color = d.net>=0?'var(--income)':'var(--expense)';
+  if(document.getElementById('voiceList')) renderVoiceList();
   const meta = state.dailyMeta[selectedHomeDate]||{};
   document.getElementById('metaTrips').value = meta.trips ?? '';
   document.getElementById('metaOdo').value = meta.odometer ?? '';
@@ -571,6 +603,123 @@ function renderHome(){
   }
 }
 function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+// ---------- TRIP TIMER ----------
+let tripInterval = null;
+function bindTrip(){
+  document.getElementById('btnStartTrip').addEventListener('click', ()=>{
+    state.tripStart = Date.now();
+    scheduleSave();
+    updateTripUI();
+  });
+  document.getElementById('btnEndTrip').addEventListener('click', ()=>{
+    const start = state.tripStart;
+    state.tripStart = null;
+    scheduleSave();
+    clearInterval(tripInterval);
+    document.getElementById('tripActive').style.display='none';
+    document.getElementById('tripIdle').style.display='block';
+    if(!start) return;
+    const mins = Math.round((Date.now()-start)/60000);
+    openTripIncomeSheet(mins);
+  });
+  updateTripUI();
+}
+function updateTripUI(){
+  if(state.tripStart){
+    document.getElementById('tripIdle').style.display='none';
+    document.getElementById('tripActive').style.display='block';
+    clearInterval(tripInterval);
+    tripInterval = setInterval(()=>{
+      const secs = Math.floor((Date.now()-state.tripStart)/1000);
+      const h = String(Math.floor(secs/3600)).padStart(2,'0');
+      const m = String(Math.floor((secs%3600)/60)).padStart(2,'0');
+      const s = String(secs%60).padStart(2,'0');
+      document.getElementById('tripTimer').textContent = `${h}:${m}:${s}`;
+    },1000);
+  } else {
+    document.getElementById('tripIdle').style.display='block';
+    document.getElementById('tripActive').style.display='none';
+  }
+}
+function openTripIncomeSheet(mins){
+  const durText = mins<60 ? `${mins} دقيقة` : `${Math.floor(mins/60)} ساعة و${mins%60} دقيقة`;
+  const optHtml = INCOME_SOURCES.map(o=>`<option value="${o}">${o}</option>`).join('');
+  openSheet(`
+    <h2>🏁 انتهت الرحلة (${durText})</h2>
+    <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 12px;">سجّل دخل الرحلة دي علطول</p>
+    <div class="field"><label>المبلغ (جنيه)</label><input type="number" id="tripIncAmount" inputmode="decimal" autofocus></div>
+    <div class="field"><label>المصدر</label><select id="tripIncCat">${optHtml}</select></div>
+    <div class="sheet-actions">
+      <button class="cancel" id="sheetCancel">تجاهل</button>
+      <button class="confirm" id="sheetSave">حفظ</button>
+    </div>
+  `);
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  document.getElementById('sheetSave').addEventListener('click', ()=>{
+    const amount = Number(document.getElementById('tripIncAmount').value)||0;
+    if(amount<=0){ closeSheet(); return; }
+    const cat = document.getElementById('tripIncCat').value;
+    state.transactions.push({id:uid(), date:selectedHomeDate, type:'income', amount, category:cat, note:`مدة الرحلة: ${durText}`});
+    scheduleSave(); closeSheet(); renderAll();
+  });
+}
+
+// ---------- VOICE NOTES ----------
+let mediaRecorder = null, audioChunks = [], isRecording = false;
+function bindVoice(){
+  document.getElementById('btnRecordVoice').addEventListener('click', toggleRecording);
+  renderVoiceList();
+}
+async function toggleRecording(){
+  if(isRecording){
+    mediaRecorder.stop();
+    return;
+  }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e=>audioChunks.push(e.data);
+    mediaRecorder.onstop = ()=>{
+      const blob = new Blob(audioChunks, {type:'audio/webm'});
+      const reader = new FileReader();
+      reader.onloadend = ()=>{
+        if(!state.voiceNotes) state.voiceNotes = [];
+        state.voiceNotes.push({id:uid(), date:selectedHomeDate, time:new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}), dataUrl:reader.result});
+        scheduleSave(); renderVoiceList();
+      };
+      reader.readAsDataURL(blob);
+      stream.getTracks().forEach(t=>t.stop());
+      isRecording = false;
+      document.getElementById('recIcon').textContent = '🎙️';
+      document.getElementById('recLabel').textContent = 'بدء تسجيل';
+      document.getElementById('btnRecordVoice').style.background = 'var(--accent)';
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    document.getElementById('recIcon').textContent = '⏺️';
+    document.getElementById('recLabel').textContent = 'إيقاف التسجيل';
+    document.getElementById('btnRecordVoice').style.background = 'var(--expense)';
+  }catch(e){
+    alertMsg('محتاج تسمح للتطبيق باستخدام الميكروفون');
+  }
+}
+function renderVoiceList(){
+  const notes = (state.voiceNotes||[]).filter(n=>n.date===selectedHomeDate);
+  const el = document.getElementById('voiceList');
+  if(!notes.length){ el.innerHTML=''; return; }
+  el.innerHTML = notes.slice().reverse().map(n=>`
+    <div class="txrow" style="margin-bottom:6px;">
+      <div class="info"><div class="cat">🎙️ ${n.time}</div></div>
+      <audio controls style="height:32px;max-width:130px;" src="${n.dataUrl}"></audio>
+      <button class="del" data-delv="${n.id}">✕</button>
+    </div>`).join('');
+  el.querySelectorAll('[data-delv]').forEach(b=>b.addEventListener('click', ()=>{
+    state.voiceNotes = state.voiceNotes.filter(n=>n.id!==b.dataset.delv);
+    scheduleSave(); renderVoiceList();
+  }));
+}
 
 // ---------- LOG / REPORTS ----------
 let currentPeriod = 'daily';
@@ -642,8 +791,9 @@ function renderReport(period){
   const txs = state.transactions.filter(t=>t.date>=s && t.date<=e);
   const incDidi = txs.filter(t=>t.type==='income'&&t.category==='DiDi').reduce((a,t)=>a+t.amount,0);
   const incStu = txs.filter(t=>t.type==='income'&&t.category==='توصيل طلاب').reduce((a,t)=>a+t.amount,0);
+  const incPersonal = txs.filter(t=>t.type==='income'&&t.category==='مشوار شخصي').reduce((a,t)=>a+t.amount,0);
   const exp = txs.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-  const net = incDidi+incStu-exp;
+  const net = incDidi+incStu+incPersonal-exp;
   const metaEntries = Object.keys(state.dailyMeta).filter(d=>d>=s&&d<=e).sort().map(d=>state.dailyMeta[d]);
   const hours = metaEntries.reduce((a,m)=>a+(m.hours||0),0);
   const trips = metaEntries.reduce((a,m)=>a+(m.trips||0),0);
@@ -652,9 +802,9 @@ function renderReport(period){
   const days = (new Date(e)-new Date(s))/86400000 + 1;
   const titles = {daily:'التقرير اليومي', weekly:'التقرير الأسبوعي (آخر 7 أيام)', monthly:'التقرير الشهري'};
   document.getElementById('reportTitle').textContent = titles[period];
-  const max = Math.max(incDidi, incStu, exp, 1);
+  const max = Math.max(incDidi, incStu, incPersonal, exp, 1);
   document.getElementById('reportBars').innerHTML = [
-    ['دخل DiDi', incDidi, 'var(--income)'], ['دخل الطلاب', incStu, 'var(--accent)'], ['المصروفات', exp, 'var(--expense)']
+    ['دخل DiDi', incDidi, 'var(--income)'], ['دخل الطلاب', incStu, 'var(--accent)'], ['مشاوير شخصية', incPersonal, '#8B7FD9'], ['المصروفات', exp, 'var(--expense)']
   ].map(([l,v,c])=>`<div class="barrow"><div class="lbl"><span>${l}</span><span>${fmt(v)}</span></div><div class="bartrack"><div class="barfill" style="width:${(v/max*100)}%;background:${c};"></div></div></div>`).join('')
   + `<div class="barrow"><div class="lbl"><span>صافي الربح</span><span style="color:${net>=0?'var(--income)':'var(--expense)'}">${fmt(net)}</span></div></div>`;
   document.getElementById('repCostKm').textContent = km&&km>0 ? fmt(exp/km) : '-';
