@@ -229,6 +229,15 @@ nav.bottom button.active{color:var(--accent);}
           <button class="bigbtn exp" id="btnEndTrip" style="width:100%;"><span class="ic">⏹️</span>إنهاء الرحلة</button>
         </div>
       </div>
+      <div class="card">
+        <h3>🅿️ مكان ركن العربية</h3>
+        <div class="setting-row" style="padding:6px 0;">
+          <div><div class="s-lbl" style="font-size:13px;">تتبع تلقائي (لازم التطبيق يكون فاتح)</div></div>
+          <div class="switch" id="parkAutoSwitch"><div class="knob"></div></div>
+        </div>
+        <button class="smallbtn" id="btnSaveParking" style="width:100%;margin-top:6px;">📍 احفظ مكان ركني دلوقتي</button>
+        <div id="parkingInfo" style="margin-top:10px;"></div>
+      </div>
       <div class="bigbtns">
         <button class="bigbtn inc" id="btnAddIncome"><span class="ic">🟢</span>+ دخل</button>
         <button class="bigbtn exp" id="btnAddExpense"><span class="ic">🔴</span>+ مصروف</button>
@@ -289,12 +298,21 @@ nav.bottom button.active{color:var(--accent);}
     <div class="view" id="view-maint">
       <div class="tabs" id="maintTabs">
         <button data-t="parts" class="active">قطع الغيار</button>
+        <button data-t="fuel">الوقود</button>
         <button data-t="reminders">تراخيص وتأمين</button>
         <button data-t="log">سجل الصيانة</button>
       </div>
       <div id="maintParts">
         <div class="addlink" id="addPartBtn">➕ إضافة قطعة غيار جديدة</div>
         <div class="plist" id="partsList"></div>
+      </div>
+      <div id="maintFuel" style="display:none;">
+        <div class="card" id="fuelAvgCard" style="display:none;">
+          <h3>⛽ متوسط الاستهلاك</h3>
+          <div class="stat"><div class="lbl">كم لكل لتر</div><div class="val" id="fuelAvgVal">-</div></div>
+        </div>
+        <div class="addlink" id="addFuelBtn">➕ تسجيل تعبئة وقود</div>
+        <div class="plist" id="fuelList"></div>
       </div>
       <div id="maintReminders" style="display:none;">
         <div class="addlink" id="addReminderBtn">➕ إضافة تذكير جديد (رخصة / فحص / تأمين)</div>
@@ -348,6 +366,13 @@ nav.bottom button.active{color:var(--accent);}
 
     <!-- SETTINGS -->
     <div class="view" id="view-settings">
+      <div class="card">
+        <h3>🚘 بيانات العربية</h3>
+        <div class="field"><label>نوع/ماركة العربية</label><input type="text" id="carType" placeholder="مثال: هيونداي"></div>
+        <div class="field"><label>الموديل</label><input type="text" id="carModel" placeholder="مثال: إلنترا"></div>
+        <div class="field"><label>سنة الصنع</label><input type="number" id="carYear" placeholder="مثال: 2019"></div>
+        <button class="savebtn" id="saveCarInfo">حفظ بيانات العربية</button>
+      </div>
       <div class="card">
         <div class="setting-row">
           <div><div class="s-lbl">🔒 حماية برمز PIN</div><div class="s-sub">قفل التطبيق برمز من 4 أرقام</div></div>
@@ -409,7 +434,8 @@ nav.bottom button.active{color:var(--accent);}
 let state = {
   pin: null, darkMode: false,
   transactions: [], dailyMeta: {}, parts: [], maintenanceLog: [],
-  reminders: [], suppliers: [], customers: [], voiceNotes: [], tripStart: null
+  reminders: [], suppliers: [], customers: [], voiceNotes: [], tripStart: null,
+  parkingSpot: null, parkAutoTrack: false, fuelLogs: [], carInfo: {type:'', model:'', year:''}
 };
 let selectedHomeDate = todayStr();
 let unlocked = false;
@@ -443,6 +469,7 @@ async function init(){
   bindHome();
   bindTrip();
   bindVoice();
+  bindParking();
   bindLog();
   bindMaint();
   bindContacts();
@@ -454,7 +481,7 @@ async function init(){
 }
 function applyTheme(){ document.body.setAttribute('data-theme', state.darkMode?'dark':'light'); document.querySelector('meta[name=theme-color]').setAttribute('content', state.darkMode?'#0F1620':'#0F1B2B'); }
 
-function renderAll(){ renderHome(); renderLogRecord(); renderReport(currentPeriod); renderParts(); renderReminders(); renderMaintLog(); renderSuppliers(); renderCustomers(); renderMonthBadge(); }
+function renderAll(){ renderHome(); renderLogRecord(); renderReport(currentPeriod); renderParts(); renderFuelList(); renderReminders(); renderMaintLog(); renderSuppliers(); renderCustomers(); renderMonthBadge(); }
 function renderMonthBadge(){
   const now = new Date();
   const s = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0,10);
@@ -732,6 +759,66 @@ function renderVoiceList(){
   }));
 }
 
+// ---------- PARKING LOCATION ----------
+let parkWatchId = null, parkWasMoving = false, parkStillSince = null;
+function bindParking(){
+  const sw = document.getElementById('parkAutoSwitch');
+  sw.classList.toggle('on', !!state.parkAutoTrack);
+  if(state.parkAutoTrack) startParkTracking();
+  sw.addEventListener('click', ()=>{
+    state.parkAutoTrack = !state.parkAutoTrack;
+    scheduleSave();
+    sw.classList.toggle('on', state.parkAutoTrack);
+    if(state.parkAutoTrack) startParkTracking(); else stopParkTracking();
+  });
+  document.getElementById('btnSaveParking').addEventListener('click', saveParkingNow);
+  renderParkingInfo();
+}
+function startParkTracking(){
+  if(!navigator.geolocation){ alertMsg('الموقع الجغرافي غير مدعوم على هذا الجهاز'); return; }
+  parkWasMoving = false; parkStillSince = null;
+  parkWatchId = navigator.geolocation.watchPosition(pos=>{
+    const speed = pos.coords.speed; // m/s
+    if(speed!=null && speed > 2.5){ parkWasMoving = true; parkStillSince = null; }
+    else if(parkWasMoving){
+      if(!parkStillSince) parkStillSince = Date.now();
+      else if(Date.now()-parkStillSince > 90000){
+        savePark(pos.coords.latitude, pos.coords.longitude, true);
+        parkWasMoving = false; parkStillSince = null;
+      }
+    }
+  }, ()=>{}, {enableHighAccuracy:true, maximumAge:5000});
+}
+function stopParkTracking(){
+  if(parkWatchId!=null){ navigator.geolocation.clearWatch(parkWatchId); parkWatchId=null; }
+}
+function saveParkingNow(){
+  if(!navigator.geolocation){ alertMsg('الموقع الجغرافي غير مدعوم على هذا الجهاز'); return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    savePark(pos.coords.latitude, pos.coords.longitude, false);
+  }, ()=>{ alertMsg('محتاج تسمح للتطبيق بالوصول لموقعك'); }, {enableHighAccuracy:true});
+}
+function savePark(lat, lng, auto){
+  state.parkingSpot = {lat, lng, time:new Date().toLocaleString('ar-EG'), auto};
+  scheduleSave();
+  renderParkingInfo();
+  if(auto) alertMsg('📍 تم رصد توقفك وحفظ مكان ركن العربية تلقائيًا');
+}
+function renderParkingInfo(){
+  const el = document.getElementById('parkingInfo');
+  if(!el) return;
+  const p = state.parkingSpot;
+  if(!p){ el.innerHTML = '<div class="empty">لا يوجد مكان محفوظ بعد</div>'; return; }
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
+  const waText = encodeURIComponent(`مكان ركن عربيتي: ${mapsUrl}`);
+  el.innerHTML = `
+    <div class="pmeta" style="margin-bottom:8px;">${p.auto?'🔵 اتحفظ تلقائي':'📍 اتحفظ يدويًا'} · ${p.time}</div>
+    <div style="display:flex;gap:8px;">
+      <a class="smallbtn" style="flex:1;text-align:center;text-decoration:none;" href="${mapsUrl}" target="_blank">🗺️ افتح في خرائط جوجل</a>
+      <a class="smallbtn" style="flex:1;text-align:center;text-decoration:none;" href="https://wa.me/?text=${waText}" target="_blank">💬 مشاركة واتساب</a>
+    </div>`;
+}
+
 // ---------- LOG / REPORTS ----------
 let currentPeriod = 'daily';
 function bindLog(){
@@ -830,10 +917,11 @@ function bindMaint(){
     b.addEventListener('click', ()=>{
       document.querySelectorAll('#maintTabs button').forEach(x=>x.classList.remove('active'));
       b.classList.add('active');
-      ['parts','reminders','log'].forEach(t=>document.getElementById('maint'+cap(t)).style.display = t===b.dataset.t?'block':'none');
+      ['parts','fuel','reminders','log'].forEach(t=>document.getElementById('maint'+cap(t)).style.display = t===b.dataset.t?'block':'none');
     });
   });
   document.getElementById('addPartBtn').addEventListener('click', ()=>openPartSheet());
+  document.getElementById('addFuelBtn').addEventListener('click', ()=>openFuelSheet());
   document.getElementById('addReminderBtn').addEventListener('click', ()=>openReminderSheet());
 }
 function cap(s){ return s[0].toUpperCase()+s.slice(1); }
@@ -901,6 +989,74 @@ function renderMaintLog(){
   if(!state.maintenanceLog.length){ el.innerHTML='<div class="empty">لا يوجد سجل صيانة بعد</div>'; return; }
   const sorted = [...state.maintenanceLog].sort((a,b)=>b.date.localeCompare(a.date));
   el.innerHTML = sorted.map(l=>`<div class="pitem"><div class="row1"><span>${l.partName}</span><span>${fmt(l.cost)} ج</span></div><div class="pmeta">${dateAr(l.date)} · عند ${fmt(l.odometer)} كم</div></div>`).join('');
+}
+
+// ---------- FUEL LOG ----------
+function openFuelSheet(){
+  openSheet(`
+    <h2>⛽ تسجيل تعبئة وقود</h2>
+    <div class="field"><label>تاريخ التعبئة</label><input type="date" id="fDate" value="${todayStr()}"></div>
+    <div class="field"><label>عدد اللترات اللي اتضافت</label><input type="number" id="fLiters" inputmode="decimal"></div>
+    <div class="field"><label>قراءة العداد الحالية (كم)</label><input type="number" id="fOdo" value="${getCurrentOdometer()||''}" inputmode="numeric"></div>
+    <div class="field"><label>سعر اللتر (اختياري)</label><input type="number" id="fPrice" inputmode="decimal"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+  `);
+  document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+  document.getElementById('sheetSave').addEventListener('click', ()=>{
+    const liters = Number(document.getElementById('fLiters').value)||0;
+    const odometer = Number(document.getElementById('fOdo').value)||0;
+    const price = Number(document.getElementById('fPrice').value)||null;
+    const date = document.getElementById('fDate').value || todayStr();
+    if(liters<=0 || odometer<=0) return;
+    if(!state.fuelLogs) state.fuelLogs = [];
+    state.fuelLogs.push({id:uid(), date, liters, odometer, price});
+    scheduleSave(); closeSheet(); renderFuelList();
+  });
+}
+function renderFuelList(){
+  const el = document.getElementById('fuelList');
+  const avgCard = document.getElementById('fuelAvgCard');
+  const avgVal = document.getElementById('fuelAvgVal');
+  if(!el) return;
+  const logs = (state.fuelLogs||[]).slice().sort((a,b)=>a.odometer-b.odometer);
+  if(!logs.length){ el.innerHTML='<div class="empty">لا توجد تعبئات مسجّلة بعد</div>'; if(avgCard) avgCard.style.display='none'; return; }
+  let totalKm = 0, totalLiters = 0;
+  const rows = logs.map((f,i)=>{
+    let consText = '-';
+    if(i>0){
+      const prev = logs[i-1];
+      const km = f.odometer - prev.odometer;
+      if(km>0 && f.liters>0){
+        const cons = km/f.liters;
+        consText = `${fmt(cons)} كم/لتر`;
+        totalKm += km; totalLiters += f.liters;
+      }
+    }
+    return {f, consText};
+  });
+  if(totalLiters>0){
+    avgCard.style.display='block';
+    avgVal.textContent = fmt(totalKm/totalLiters);
+  } else if(avgCard) avgCard.style.display='none';
+  el.innerHTML = rows.slice().reverse().map(({f,consText})=>`
+    <div class="pitem">
+      <div class="row1"><span>${fmt(f.liters)} لتر</span><span>${consText}</span></div>
+      <div class="pmeta">${dateAr(f.date)} · عند ${fmt(f.odometer)} كم${f.price?` · ${fmt(f.price)} ج/لتر`:''}</div>
+      <div class="actions"><button class="delbtn" data-delf="${f.id}" style="flex:1;">حذف</button></div>
+    </div>`).join('');
+  el.querySelectorAll('[data-delf]').forEach(b=>b.addEventListener('click', ()=>{
+    state.fuelLogs = state.fuelLogs.filter(f=>f.id!==b.dataset.delf);
+    scheduleSave(); renderFuelList();
+  }));
+}
+function getAvgConsumption(){
+  const logs = (state.fuelLogs||[]).slice().sort((a,b)=>a.odometer-b.odometer);
+  let totalKm=0, totalLiters=0;
+  for(let i=1;i<logs.length;i++){
+    const km = logs[i].odometer - logs[i-1].odometer;
+    if(km>0 && logs[i].liters>0){ totalKm+=km; totalLiters+=logs[i].liters; }
+  }
+  return totalLiters>0 ? totalKm/totalLiters : null;
 }
 function openReminderSheet(){
   openSheet(`
@@ -1029,6 +1185,11 @@ function bindCalc(){
       b.classList.add('active');
       document.getElementById('calcBasic').style.display = b.dataset.t==='basic'?'block':'none';
       document.getElementById('calcTrip').style.display = b.dataset.t==='trip'?'block':'none';
+      if(b.dataset.t==='trip'){
+        const avg = getAvgConsumption();
+        const consInput = document.getElementById('tripCons');
+        if(avg && !consInput.value) consInput.value = avg.toFixed(1);
+      }
     });
   });
   document.getElementById('tripCalcBtn').addEventListener('click', ()=>{
@@ -1072,6 +1233,19 @@ function calcPress(k){
 
 // ---------- SETTINGS ----------
 function bindSettings(){
+  const car = state.carInfo || {};
+  document.getElementById('carType').value = car.type||'';
+  document.getElementById('carModel').value = car.model||'';
+  document.getElementById('carYear').value = car.year||'';
+  document.getElementById('saveCarInfo').addEventListener('click', ()=>{
+    state.carInfo = {
+      type: document.getElementById('carType').value.trim(),
+      model: document.getElementById('carModel').value.trim(),
+      year: document.getElementById('carYear').value.trim()
+    };
+    scheduleSave();
+    alertMsg('تم حفظ بيانات العربية');
+  });
   const pinSw = document.getElementById('pinSwitch');
   const darkSw = document.getElementById('darkSwitch');
   pinSw.classList.toggle('on', !!state.pin);
