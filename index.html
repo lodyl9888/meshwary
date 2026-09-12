@@ -428,7 +428,7 @@ async function loadData(){
   catch(e){ /* no data yet */ }
 }
 
-const EXPENSE_CATS = ['بنزين','غاز','صيانة','تغيير زيت','غسيل','مخالفات','شخصي','أخرى'];
+const EXPENSE_CATS = ['بنزين','غاز','صيانة','تغيير زيت','غسيل','مخالفات','شخصي','صيانة كاوتش','جراچ سيارة','إكراميات','نفقة نور الشهرية','مصروف شخصي لنور','مشتريات منزلية','فاتورة الغاز','شحن كارت كهرباء','فاتورة المياه','فاتورة الخط الأرضي','فاتورة النت','شحن رصيد للموبايل','قسط الجمعية','تجديد رخصة سيارة','تجديد رخصة شخصية','أخرى'];
 const INCOME_SOURCES = ['DiDi','توصيل طلاب','مشوار شخصي'];
 
 // ---------- INIT ----------
@@ -538,6 +538,17 @@ function computeDay(date){
   const expense = txs.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   return {income, expense, net:income-expense, txs};
 }
+function computeReminderDate(r){
+  if(!r.recurring) return new Date(r.date+'T00:00:00');
+  const daysBefore = r.daysBefore||3;
+  const now = new Date(); now.setHours(0,0,0,0);
+  for(let i=0;i<6;i++){
+    const boundary = new Date(now.getFullYear(), now.getMonth()+i, 1);
+    const due = new Date(boundary); due.setDate(due.getDate()-daysBefore);
+    if(due>=now) return due;
+  }
+  return now;
+}
 function getAlerts(){
   const alerts=[];
   const curOdo = getCurrentOdometer();
@@ -552,7 +563,7 @@ function getAlerts(){
   }
   const today = new Date();
   state.reminders.forEach(r=>{
-    const d = new Date(r.date+'T00:00:00');
+    const d = computeReminderDate(r);
     const days = Math.ceil((d-today)/86400000);
     if(days<=30 && days>=-3650) alerts.push(days<0?`⛔ ${r.name} انتهى موعده`:`⏰ ${r.name} خلال ${days} يوم`);
   });
@@ -894,18 +905,29 @@ function renderMaintLog(){
 function openReminderSheet(){
   openSheet(`
     <h2>➕ إضافة تذكير</h2>
-    <div class="field"><label>النوع</label><select id="rType"><option value="رخصة">رخصة القيادة</option><option value="فحص دوري">فحص دوري</option><option value="تأمين">تأمين</option><option value="أخرى">أخرى</option></select></div>
+    <div class="field"><label>النوع</label><select id="rType"><option value="رخصة">رخصة القيادة</option><option value="فحص دوري">فحص دوري</option><option value="تأمين">تأمين</option><option value="قسط الجمعية">قسط الجمعية (شهري)</option><option value="أخرى">أخرى</option></select></div>
     <div class="field"><label>اسم/تفاصيل</label><input type="text" id="rName" placeholder="مثال: رخصة السيارة"></div>
-    <div class="field"><label>تاريخ الاستحقاق</label><input type="date" id="rDate"></div>
+    <div id="rDateWrap" class="field"><label>تاريخ الاستحقاق</label><input type="date" id="rDate"></div>
+    <div id="rRecurWrap" class="field" style="display:none;"><label>تذكيري قبل بداية الشهر بعدد أيام</label><input type="number" id="rDaysBefore" value="3" min="1" max="28"></div>
     <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
   `);
+  document.getElementById('rType').addEventListener('change', e=>{
+    const isRecurring = e.target.value==='قسط الجمعية';
+    document.getElementById('rDateWrap').style.display = isRecurring?'none':'block';
+    document.getElementById('rRecurWrap').style.display = isRecurring?'block':'none';
+  });
   document.getElementById('sheetCancel').addEventListener('click', closeSheet);
   document.getElementById('sheetSave').addEventListener('click', ()=>{
     const type = document.getElementById('rType').value;
     const name = document.getElementById('rName').value.trim() || type;
-    const date = document.getElementById('rDate').value;
-    if(!date) return;
-    state.reminders.push({id:uid(), type, name, date});
+    if(type==='قسط الجمعية'){
+      const daysBefore = Number(document.getElementById('rDaysBefore').value)||3;
+      state.reminders.push({id:uid(), type, name, recurring:true, daysBefore});
+    } else {
+      const date = document.getElementById('rDate').value;
+      if(!date) return;
+      state.reminders.push({id:uid(), type, name, date});
+    }
     scheduleSave(); closeSheet(); renderReminders(); renderHome();
   });
 }
@@ -913,11 +935,13 @@ function renderReminders(){
   const el = document.getElementById('remindersList');
   if(!state.reminders.length){ el.innerHTML='<div class="empty">لا توجد تذكيرات</div>'; return; }
   const today = new Date();
-  const sorted = [...state.reminders].sort((a,b)=>a.date.localeCompare(b.date));
-  el.innerHTML = sorted.map(r=>{
-    const days = Math.ceil((new Date(r.date+'T00:00:00')-today)/86400000);
+  const withDates = state.reminders.map(r=>({r, d:computeReminderDate(r)}));
+  withDates.sort((a,b)=>a.d-b.d);
+  el.innerHTML = withDates.map(({r,d})=>{
+    const days = Math.ceil((d-today)/86400000);
     const color = days<0?'var(--expense)':days<=30?'var(--accent)':'var(--income)';
-    return `<div class="pitem"><div class="row1"><span>${r.name}</span><span style="color:${color}">${days<0?'منتهي':days+' يوم'}</span></div><div class="pmeta">${r.type} · ${dateAr(r.date)}</div>
+    const dateLabel = r.recurring ? `شهريًا، قبل بداية الشهر بـ${r.daysBefore} يوم` : dateAr(r.date);
+    return `<div class="pitem"><div class="row1"><span>${r.name}</span><span style="color:${color}">${days<0?'منتهي':days+' يوم'}</span></div><div class="pmeta">${r.type} · ${dateLabel}</div>
       <div class="actions"><button class="delbtn" data-del="${r.id}" style="flex:1;">حذف</button></div></div>`;
   }).join('');
   el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
@@ -1078,9 +1102,17 @@ function alertMsg(m){
 }
 function exportCsv(){
   let csv = 'التاريخ,النوع,الفئة,المبلغ,ملاحظة\n';
-  [...state.transactions].sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{
+  const sorted = [...state.transactions].sort((a,b)=>a.date.localeCompare(b.date));
+  sorted.forEach(t=>{
     csv += `${t.date},${t.type==='income'?'دخل':'مصروف'},${t.category},${t.amount},"${(t.note||'').replace(/"/g,'""')}"\n`;
   });
+  const totalIncome = sorted.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+  const totalExpense = sorted.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+  const totalNet = totalIncome - totalExpense;
+  csv += '\n';
+  csv += `,,إجمالي الدخل,${totalIncome},\n`;
+  csv += `,,إجمالي المصروفات,${totalExpense},\n`;
+  csv += `,,صافي الربح,${totalNet},\n`;
   try{
     const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
