@@ -344,8 +344,9 @@ nav.bottom button.active{color:var(--accent);}
         <h3>☁️ ربط Google Drive (نسخ احتياطي تلقائي)</h3>
         <div id="gdriveSetup">
           <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px;">أول مرة بس: الصق Google Client ID اللي عملته (شوف التعليمات)</p>
-          <div class="field"><label>Google Client ID</label><input type="text" id="gClientId" placeholder="xxxxxxxx.apps.googleusercontent.com"></div>
+          <div class="field"><label>Google Client ID</label><input type="text" id="gClientId" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
           <button class="savebtn" id="saveClientId">حفظ</button>
+          <button class="smallbtn" id="showClientId" style="width:100%;margin-top:8px;">عرض الكود المحفوظ بالتفصيل</button>
         </div>
         <div id="gdriveConnected" style="display:none;">
           <div class="setting-row">
@@ -988,6 +989,19 @@ function gdriveInit(){
     alertMsg('تم الحفظ، دوس تسجيل الدخول بـ Google دلوقتي');
   });
   document.getElementById('gSignInBtn').addEventListener('click', gdriveSignIn);
+  document.getElementById('showClientId').addEventListener('click', ()=>{
+    const val = state.googleClientId || '';
+    const expected = '345218957992-7komguma69sninnuaod6eosk604dfe9c.apps.googleusercontent.com';
+    const match = val === expected;
+    openSheet(`
+      <h2>تفاصيل الكود المحفوظ</h2>
+      <div class="field"><label>الكود المحفوظ حاليًا (${val.length} حرف)</label><textarea class="dump" readonly style="height:80px;">${escapeHtml(val)}</textarea></div>
+      <div class="field"><label>الكود الصحيح المتوقع (${expected.length} حرف)</label><textarea class="dump" readonly style="height:80px;">${expected}</textarea></div>
+      <div style="font-weight:800;color:${match?'var(--income)':'var(--expense)'};text-align:center;padding:8px;">${match?'✅ الكود مطابق تمامًا':'❌ الكود غير مطابق'}</div>
+      <div class="sheet-actions"><button class="confirm" id="sheetOk" style="flex:1;">تمام</button></div>
+    `);
+    document.getElementById('sheetOk').addEventListener('click', closeSheet);
+  });
   document.getElementById('gBackupBtn').addEventListener('click', gdriveBackup);
   document.getElementById('gRestoreBtn').addEventListener('click', gdriveRestore);
   if(state.gLastBackup) document.getElementById('gLastBackup').textContent = 'آخر نسخة احتياطية: '+state.gLastBackup;
