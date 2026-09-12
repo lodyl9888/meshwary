@@ -980,7 +980,10 @@ function gdriveInit(){
   const idEl = document.getElementById('gClientId');
   if(state.googleClientId) idEl.value = state.googleClientId;
   document.getElementById('saveClientId').addEventListener('click', ()=>{
-    state.googleClientId = document.getElementById('gClientId').value.trim();
+    const raw = document.getElementById('gClientId').value;
+    const cleaned = raw.replace(/[^\x20-\x7E]/g, '').trim();
+    state.googleClientId = cleaned;
+    document.getElementById('gClientId').value = cleaned;
     scheduleSave();
     alertMsg('تم الحفظ، دوس تسجيل الدخول بـ Google دلوقتي');
   });
