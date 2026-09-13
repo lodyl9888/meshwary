@@ -188,7 +188,7 @@ nav.bottom button.active{color:var(--accent);}
 
 <div id="lock">
   <div class="mark">🚗</div>
-  <div style="font-weight:800;font-size:16px;">أدخل رمز الدخول</div>
+  <div style="font-weight:800;font-size:16px;" data-i18n="enter_pin">أدخل رمز الدخول</div>
   <div class="dots" id="lockDots"></div>
   <div class="err" id="lockErr"></div>
   <div class="keypad" id="lockKeypad"></div>
@@ -208,56 +208,56 @@ nav.bottom button.active{color:var(--accent);}
     <div class="view active" id="view-home">
       <div class="alerts" id="homeAlerts"></div>
       <div class="datebar">
-        <span style="font-size:13px;font-weight:700;color:var(--text-dim);">📅 يوم التسجيل</span>
+        <span style="font-size:13px;font-weight:700;color:var(--text-dim);" data-i18n="reg_day">📅 يوم التسجيل</span>
         <input type="date" id="homeDate">
       </div>
       <div class="card">
-        <h3>ملخص اليوم</h3>
+        <h3 data-i18n="summary_title">ملخص اليوم</h3>
         <div class="summary-grid">
-          <div class="stat income"><div class="lbl">إجمالي الدخل</div><div class="val" id="sumIncome">0</div></div>
-          <div class="stat expense"><div class="lbl">إجمالي المصروفات</div><div class="val" id="sumExpense">0</div></div>
-          <div class="stat net"><div class="lbl">صافي الربح</div><div class="val" id="sumNet">0</div></div>
+          <div class="stat income"><div class="lbl" data-i18n="total_income">إجمالي الدخل</div><div class="val" id="sumIncome">0</div></div>
+          <div class="stat expense"><div class="lbl" data-i18n="total_expense">إجمالي المصروفات</div><div class="val" id="sumExpense">0</div></div>
+          <div class="stat net"><div class="lbl" data-i18n="net_profit">صافي الربح</div><div class="val" id="sumNet">0</div></div>
         </div>
       </div>
       <div class="card" id="tripCard">
-        <h3>⏱️ رحلة حالية</h3>
+        <h3 data-i18n="trip_title">⏱️ رحلة حالية</h3>
         <div id="tripIdle">
-          <button class="bigbtn inc" id="btnStartTrip" style="width:100%;"><span class="ic">▶️</span>بدء رحلة</button>
+          <button class="bigbtn inc" id="btnStartTrip" style="width:100%;"><span class="ic">▶️</span><span data-i18n="trip_start">بدء رحلة</span></button>
         </div>
         <div id="tripActive" style="display:none;">
           <div style="text-align:center;font-size:32px;font-weight:900;font-variant-numeric:tabular-nums;margin-bottom:10px;" id="tripTimer">00:00:00</div>
-          <button class="bigbtn exp" id="btnEndTrip" style="width:100%;"><span class="ic">⏹️</span>إنهاء الرحلة</button>
+          <button class="bigbtn exp" id="btnEndTrip" style="width:100%;"><span class="ic">⏹️</span><span data-i18n="trip_end">إنهاء الرحلة</span></button>
         </div>
       </div>
       <div class="card">
-        <h3>🅿️ مكان ركن العربية</h3>
+        <h3 data-i18n="parking_title">🅿️ مكان ركن العربية</h3>
         <div class="setting-row" style="padding:6px 0;">
-          <div><div class="s-lbl" style="font-size:13px;">تتبع تلقائي (لازم التطبيق يكون فاتح)</div></div>
+          <div><div class="s-lbl" style="font-size:13px;" data-i18n="parking_auto">تتبع تلقائي (لازم التطبيق يكون فاتح)</div></div>
           <div class="switch" id="parkAutoSwitch"><div class="knob"></div></div>
         </div>
-        <button class="smallbtn" id="btnSaveParking" style="width:100%;margin-top:6px;">📍 احفظ مكان ركني دلوقتي</button>
+        <button class="smallbtn" id="btnSaveParking" style="width:100%;margin-top:6px;" data-i18n="parking_save">📍 احفظ مكان ركني دلوقتي</button>
         <div id="parkingInfo" style="margin-top:10px;"></div>
       </div>
       <div class="bigbtns">
-        <button class="bigbtn inc" id="btnAddIncome"><span class="ic">🟢</span>+ دخل</button>
-        <button class="bigbtn exp" id="btnAddExpense"><span class="ic">🔴</span>+ مصروف</button>
+        <button class="bigbtn inc" id="btnAddIncome"><span class="ic">🟢</span><span data-i18n="add_income">+ دخل</span></button>
+        <button class="bigbtn exp" id="btnAddExpense"><span class="ic">🔴</span><span data-i18n="add_expense">+ مصروف</span></button>
       </div>
       <div class="card">
-        <h3>بيانات اليوم</h3>
+        <h3 data-i18n="today_data_title">بيانات اليوم</h3>
         <div class="meta-row">
-          <div><label>عدد الرحلات</label><input type="number" id="metaTrips" inputmode="numeric"></div>
-          <div><label>قراءة العداد (كم)</label><input type="number" id="metaOdo" inputmode="numeric"></div>
-          <div><label>ساعات العمل</label><input type="number" id="metaHours" inputmode="numeric" step="0.5"></div>
+          <div><label data-i18n="meta_trips">عدد الرحلات</label><input type="number" id="metaTrips" inputmode="numeric"></div>
+          <div><label data-i18n="meta_odo">قراءة العداد (كم)</label><input type="number" id="metaOdo" inputmode="numeric"></div>
+          <div><label data-i18n="meta_hours">ساعات العمل</label><input type="number" id="metaHours" inputmode="numeric" step="0.5"></div>
         </div>
-        <button class="savebtn" id="saveMeta">حفظ بيانات اليوم</button>
+        <button class="savebtn" id="saveMeta" data-i18n="meta_save">حفظ بيانات اليوم</button>
       </div>
       <div class="card">
-        <h3>🎙️ ملاحظات صوتية</h3>
-        <button class="bigbtn" id="btnRecordVoice" style="width:100%;background:var(--accent);"><span class="ic" id="recIcon">🎙️</span><span id="recLabel">بدء تسجيل</span></button>
+        <h3 data-i18n="voice_title">🎙️ ملاحظات صوتية</h3>
+        <button class="bigbtn" id="btnRecordVoice" style="width:100%;background:var(--accent);"><span class="ic" id="recIcon">🎙️</span><span id="recLabel" data-i18n="voice_start">بدء تسجيل</span></button>
         <div id="voiceList" style="margin-top:10px;"></div>
       </div>
       <div class="card">
-        <h3>معاملات اليوم</h3>
+        <h3 data-i18n="today_tx_title">معاملات اليوم</h3>
         <div class="txlist" id="homeTxList"></div>
       </div>
     </div>
@@ -265,30 +265,30 @@ nav.bottom button.active{color:var(--accent);}
     <!-- LOG / REPORTS -->
     <div class="view" id="view-log">
       <div class="tabs" id="logTabs">
-        <button data-t="record" class="active">السجل</button>
-        <button data-t="reports">تقارير</button>
+        <button data-t="record" class="active" data-i18n="tab_record">السجل</button>
+        <button data-t="reports" data-i18n="tab_reports">تقارير</button>
       </div>
       <div id="logRecord">
         <div class="searchbar">
-          <input type="text" id="searchInput" placeholder="بحث بتاريخ أو ملاحظة...">
-          <select id="filterType"><option value="all">الكل</option><option value="income">دخل</option><option value="expense">مصروف</option></select>
+          <input type="text" id="searchInput" data-i18n-ph="search_placeholder" placeholder="بحث بتاريخ أو ملاحظة...">
+          <select id="filterType"><option value="all" data-i18n="filter_all">الكل</option><option value="income" data-i18n="filter_income">دخل</option><option value="expense" data-i18n="filter_expense">مصروف</option></select>
         </div>
         <div id="dayList"></div>
       </div>
       <div id="logReports" style="display:none;">
         <div class="tabs" id="periodTabs">
-          <button data-p="daily" class="active">يومي</button>
-          <button data-p="weekly">أسبوعي</button>
-          <button data-p="monthly">شهري</button>
+          <button data-p="daily" class="active" data-i18n="period_daily">يومي</button>
+          <button data-p="weekly" data-i18n="period_weekly">أسبوعي</button>
+          <button data-p="monthly" data-i18n="period_monthly">شهري</button>
         </div>
         <div class="card">
-          <h3 id="reportTitle">التقرير</h3>
+          <h3 id="reportTitle" data-i18n="report_default_title">التقرير</h3>
           <div class="bars" id="reportBars"></div>
           <div class="kpi-grid">
-            <div class="stat"><div class="lbl">تكلفة الكيلومتر</div><div class="val" id="repCostKm">-</div></div>
-            <div class="stat"><div class="lbl">ربح الساعة</div><div class="val" id="repProfitHr">-</div></div>
-            <div class="stat"><div class="lbl">عدد الرحلات</div><div class="val" id="repTrips">-</div></div>
-            <div class="stat"><div class="lbl">متوسط صافي/يوم</div><div class="val" id="repAvgDay">-</div></div>
+            <div class="stat"><div class="lbl" data-i18n="kpi_cost_km">تكلفة الكيلومتر</div><div class="val" id="repCostKm">-</div></div>
+            <div class="stat"><div class="lbl" data-i18n="kpi_profit_hr">ربح الساعة</div><div class="val" id="repProfitHr">-</div></div>
+            <div class="stat"><div class="lbl" data-i18n="kpi_trips">عدد الرحلات</div><div class="val" id="repTrips">-</div></div>
+            <div class="stat"><div class="lbl" data-i18n="kpi_avg_day">متوسط صافي/يوم</div><div class="val" id="repAvgDay">-</div></div>
           </div>
         </div>
       </div>
@@ -297,25 +297,25 @@ nav.bottom button.active{color:var(--accent);}
     <!-- MAINTENANCE -->
     <div class="view" id="view-maint">
       <div class="tabs" id="maintTabs">
-        <button data-t="parts" class="active">قطع الغيار</button>
-        <button data-t="fuel">الوقود</button>
-        <button data-t="reminders">تراخيص وتأمين</button>
-        <button data-t="log">سجل الصيانة</button>
+        <button data-t="parts" class="active" data-i18n="tab_parts">قطع الغيار</button>
+        <button data-t="fuel" data-i18n="tab_fuel">الوقود</button>
+        <button data-t="reminders" data-i18n="tab_reminders">تراخيص وتأمين</button>
+        <button data-t="log" data-i18n="tab_log">سجل الصيانة</button>
       </div>
       <div id="maintParts">
-        <div class="addlink" id="addPartBtn">➕ إضافة قطعة غيار جديدة</div>
+        <div class="addlink" id="addPartBtn" data-i18n="add_part_link">➕ إضافة قطعة غيار جديدة</div>
         <div class="plist" id="partsList"></div>
       </div>
       <div id="maintFuel" style="display:none;">
         <div class="card" id="fuelAvgCard" style="display:none;">
-          <h3>⛽ متوسط الاستهلاك</h3>
-          <div class="stat"><div class="lbl">كم لكل لتر</div><div class="val" id="fuelAvgVal">-</div></div>
+          <h3 data-i18n="fuel_avg_title">⛽ متوسط الاستهلاك</h3>
+          <div class="stat"><div class="lbl" data-i18n="fuel_avg_unit_label">كم لكل لتر</div><div class="val" id="fuelAvgVal">-</div></div>
         </div>
-        <div class="addlink" id="addFuelBtn">➕ تسجيل تعبئة وقود</div>
+        <div class="addlink" id="addFuelBtn" data-i18n="add_fuel_link">➕ تسجيل تعبئة وقود</div>
         <div class="plist" id="fuelList"></div>
       </div>
       <div id="maintReminders" style="display:none;">
-        <div class="addlink" id="addReminderBtn">➕ إضافة تذكير جديد (رخصة / فحص / تأمين)</div>
+        <div class="addlink" id="addReminderBtn" data-i18n="add_reminder_link">➕ إضافة تذكير جديد (رخصة / فحص / تأمين)</div>
         <div class="plist" id="remindersList"></div>
       </div>
       <div id="maintLog" style="display:none;">
@@ -326,15 +326,15 @@ nav.bottom button.active{color:var(--accent);}
     <!-- CONTACTS -->
     <div class="view" id="view-contacts">
       <div class="tabs" id="contactTabs">
-        <button data-t="suppliers" class="active">موردين وورش</button>
-        <button data-t="customers">عملاء</button>
+        <button data-t="suppliers" class="active" data-i18n="tab_suppliers">موردين وورش</button>
+        <button data-t="customers" data-i18n="tab_customers">عملاء</button>
       </div>
       <div id="contactSuppliers">
-        <div class="addlink" id="addSupplierBtn">➕ إضافة مورد / ورشة</div>
+        <div class="addlink" id="addSupplierBtn" data-i18n="add_supplier_link">➕ إضافة مورد / ورشة</div>
         <div id="suppliersList"></div>
       </div>
       <div id="contactCustomers" style="display:none;">
-        <div class="addlink" id="addCustomerBtn">➕ إضافة عميل</div>
+        <div class="addlink" id="addCustomerBtn" data-i18n="add_customer_link">➕ إضافة عميل</div>
         <div id="customersList"></div>
       </div>
     </div>
@@ -342,8 +342,8 @@ nav.bottom button.active{color:var(--accent);}
     <!-- CALCULATOR -->
     <div class="view" id="view-calc">
       <div class="tabs" id="calcTabs">
-        <button data-t="basic" class="active">حاسبة عادية</button>
-        <button data-t="trip">تكلفة الرحلة</button>
+        <button data-t="basic" class="active" data-i18n="tab_basic">حاسبة عادية</button>
+        <button data-t="trip" data-i18n="tab_trip">تكلفة الرحلة</button>
       </div>
       <div id="calcBasic">
         <div class="calc-display" id="calcDisplay">0</div>
@@ -351,14 +351,14 @@ nav.bottom button.active{color:var(--accent);}
       </div>
       <div id="calcTrip" style="display:none;">
         <div class="card">
-          <div class="field"><label>المسافة (كم)</label><input type="number" id="tripDist" inputmode="decimal"></div>
-          <div class="field"><label>استهلاك السيارة (كم لكل لتر)</label><input type="number" id="tripCons" inputmode="decimal"></div>
-          <div class="field"><label>سعر اللتر (جنيه)</label><input type="number" id="tripPrice" inputmode="decimal"></div>
-          <div class="field"><label>الأجرة المتوقعة (اختياري)</label><input type="number" id="tripFare" inputmode="decimal"></div>
-          <button class="savebtn" id="tripCalcBtn">احسب</button>
+          <div class="field"><label data-i18n="distance_label">المسافة (كم)</label><input type="number" id="tripDist" inputmode="decimal"></div>
+          <div class="field"><label data-i18n="consumption_label">استهلاك السيارة (كم لكل لتر)</label><input type="number" id="tripCons" inputmode="decimal"></div>
+          <div class="field"><label data-i18n="price_label">سعر اللتر (جنيه)</label><input type="number" id="tripPrice" inputmode="decimal"></div>
+          <div class="field"><label data-i18n="fare_label">الأجرة المتوقعة (اختياري)</label><input type="number" id="tripFare" inputmode="decimal"></div>
+          <button class="savebtn" id="tripCalcBtn" data-i18n="calc_button">احسب</button>
           <div class="kpi-grid" style="margin-top:12px;">
-            <div class="stat expense"><div class="lbl">تكلفة الوقود</div><div class="val" id="tripCost">-</div></div>
-            <div class="stat income"><div class="lbl">صافي الربح المتوقع</div><div class="val" id="tripProfit">-</div></div>
+            <div class="stat expense"><div class="lbl" data-i18n="fuel_cost_label">تكلفة الوقود</div><div class="val" id="tripCost">-</div></div>
+            <div class="stat income"><div class="lbl" data-i18n="expected_net_label">صافي الربح المتوقع</div><div class="val" id="tripProfit">-</div></div>
           </div>
         </div>
       </div>
@@ -367,63 +367,70 @@ nav.bottom button.active{color:var(--accent);}
     <!-- SETTINGS -->
     <div class="view" id="view-settings">
       <div class="card">
-        <h3>🚘 بيانات العربية</h3>
-        <div class="field"><label>نوع/ماركة العربية</label><input type="text" id="carType" placeholder="مثال: هيونداي"></div>
-        <div class="field"><label>الموديل</label><input type="text" id="carModel" placeholder="مثال: إلنترا"></div>
-        <div class="field"><label>سنة الصنع</label><input type="number" id="carYear" placeholder="مثال: 2019"></div>
-        <button class="savebtn" id="saveCarInfo">حفظ بيانات العربية</button>
+        <h3 data-i18n="language_title">🌐 اللغة</h3>
+        <div class="seg">
+          <button id="langArBtn" class="active">العربية</button>
+          <button id="langEnBtn">English</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="car_info_title">🚘 بيانات العربية</h3>
+        <div class="field"><label data-i18n="car_type">نوع/ماركة العربية</label><input type="text" id="carType" data-i18n-ph="car_type_ph" placeholder="مثال: هيونداي"></div>
+        <div class="field"><label data-i18n="car_model">الموديل</label><input type="text" id="carModel" data-i18n-ph="car_model_ph" placeholder="مثال: إلنترا"></div>
+        <div class="field"><label data-i18n="car_year">سنة الصنع</label><input type="number" id="carYear" data-i18n-ph="car_year_ph" placeholder="مثال: 2019"></div>
+        <button class="savebtn" id="saveCarInfo" data-i18n="save_car_info">حفظ بيانات العربية</button>
       </div>
       <div class="card">
         <div class="setting-row">
-          <div><div class="s-lbl">🔒 حماية برمز PIN</div><div class="s-sub">قفل التطبيق برمز من 4 أرقام</div></div>
+          <div><div class="s-lbl" data-i18n="pin_title">🔒 حماية برمز PIN</div><div class="s-sub" data-i18n="pin_sub">قفل التطبيق برمز من 4 أرقام</div></div>
           <div class="switch" id="pinSwitch"><div class="knob"></div></div>
         </div>
         <div class="setting-row">
-          <div><div class="s-lbl">🌙 الوضع الليلي</div><div class="s-sub">مريح للعين أثناء القيادة ليلاً</div></div>
+          <div><div class="s-lbl" data-i18n="dark_title">🌙 الوضع الليلي</div><div class="s-sub" data-i18n="dark_sub">مريح للعين أثناء القيادة ليلاً</div></div>
           <div class="switch" id="darkSwitch"><div class="knob"></div></div>
         </div>
       </div>
       <div class="card">
-        <h3>☁️ ربط Google Drive (نسخ احتياطي تلقائي)</h3>
+        <h3 data-i18n="gdrive_title">☁️ ربط Google Drive (نسخ احتياطي تلقائي)</h3>
         <div id="gdriveSetup">
-          <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px;">أول مرة بس: الصق Google Client ID اللي عملته (شوف التعليمات)</p>
-          <div class="field"><label>Google Client ID</label><input type="text" id="gClientId" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
-          <button class="savebtn" id="saveClientId">حفظ</button>
-          <button class="smallbtn" id="showClientId" style="width:100%;margin-top:8px;">عرض الكود المحفوظ بالتفصيل</button>
+          <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px;" data-i18n="gdrive_hint">أول مرة بس: الصق Google Client ID اللي عملته (شوف التعليمات)</p>
+          <div class="field"><label data-i18n="client_id_label">Google Client ID</label><input type="text" id="gClientId" placeholder="xxxxxxxx.apps.googleusercontent.com" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
+          <button class="savebtn" id="saveClientId" data-i18n="save_btn">حفظ</button>
+          <button class="smallbtn" id="showClientId" style="width:100%;margin-top:8px;" data-i18n="show_client_id_btn">عرض الكود المحفوظ بالتفصيل</button>
         </div>
         <div id="gdriveConnected" style="display:none;">
           <div class="setting-row">
-            <div><div class="s-lbl" id="gAccountLbl">متصل بحساب Google</div><div class="s-sub" id="gLastBackup">لا يوجد نسخة احتياطية بعد</div></div>
+            <div><div class="s-lbl" id="gAccountLbl" data-i18n="connected_label">متصل بحساب Google</div><div class="s-sub" id="gLastBackup" data-i18n="no_backup_yet">لا يوجد نسخة احتياطية بعد</div></div>
           </div>
           <div style="display:flex;gap:8px;margin-top:8px;">
-            <button class="smallbtn" id="gBackupBtn" style="flex:1;">نسخ احتياطي الآن</button>
-            <button class="smallbtn" id="gRestoreBtn" style="flex:1;">استرجاع من Drive</button>
+            <button class="smallbtn" id="gBackupBtn" style="flex:1;" data-i18n="backup_now_btn">نسخ احتياطي الآن</button>
+            <button class="smallbtn" id="gRestoreBtn" style="flex:1;" data-i18n="restore_drive_btn">استرجاع من Drive</button>
           </div>
         </div>
-        <button class="smallbtn" id="gSignInBtn" style="width:100%;margin-top:10px;">🔐 تسجيل الدخول بـ Google</button>
+        <button class="smallbtn" id="gSignInBtn" style="width:100%;margin-top:10px;" data-i18n="sign_in_google_btn">🔐 تسجيل الدخول بـ Google</button>
       </div>
       <div class="card">
-        <h3>💾 نسخ احتياطي واستعادة</h3>
+        <h3 data-i18n="backup_restore_title">💾 نسخ احتياطي واستعادة</h3>
         <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <button class="smallbtn" id="exportBtn" style="flex:1;">تصدير نسخة احتياطية</button>
-          <button class="smallbtn" id="importBtn" style="flex:1;">استيراد نسخة</button>
+          <button class="smallbtn" id="exportBtn" style="flex:1;" data-i18n="export_backup_btn">تصدير نسخة احتياطية</button>
+          <button class="smallbtn" id="importBtn" style="flex:1;" data-i18n="import_backup_btn">استيراد نسخة</button>
         </div>
-        <textarea class="dump" id="backupText" placeholder="ستظهر بيانات النسخة الاحتياطية هنا..."></textarea>
+        <textarea class="dump" id="backupText" data-i18n-ph="backup_placeholder" placeholder="ستظهر بيانات النسخة الاحتياطية هنا..."></textarea>
       </div>
       <div class="card">
-        <h3>📤 تصدير البيانات</h3>
-        <button class="smallbtn" id="exportCsvBtn" style="width:100%;">تصدير Excel/CSV</button>
+        <h3 data-i18n="export_data_title">📤 تصدير البيانات</h3>
+        <button class="smallbtn" id="exportCsvBtn" style="width:100%;" data-i18n="export_csv_btn">تصدير Excel/CSV</button>
       </div>
     </div>
   </main>
 
   <nav class="bottom">
-    <button data-v="home" class="active"><span class="nic">🏠</span><span class="nlbl">الرئيسية</span></button>
-    <button data-v="log"><span class="nic">📊</span><span class="nlbl">السجل</span></button>
-    <button data-v="maint"><span class="nic">🔧</span><span class="nlbl">الصيانة</span></button>
-    <button data-v="contacts"><span class="nic">👥</span><span class="nlbl">جهات اتصال</span></button>
-    <button data-v="calc"><span class="nic">🧮</span><span class="nlbl">الحاسبة</span></button>
-    <button data-v="settings"><span class="nic">⚙️</span><span class="nlbl">إعدادات</span></button>
+    <button data-v="home" class="active"><span class="nic">🏠</span><span class="nlbl" data-i18n="nav_home">الرئيسية</span></button>
+    <button data-v="log"><span class="nic">📊</span><span class="nlbl" data-i18n="nav_log">السجل</span></button>
+    <button data-v="maint"><span class="nic">🔧</span><span class="nlbl" data-i18n="nav_maint">الصيانة</span></button>
+    <button data-v="contacts"><span class="nic">👥</span><span class="nlbl" data-i18n="nav_contacts">جهات اتصال</span></button>
+    <button data-v="calc"><span class="nic">🧮</span><span class="nlbl" data-i18n="nav_calc">الحاسبة</span></button>
+    <button data-v="settings"><span class="nic">⚙️</span><span class="nlbl" data-i18n="nav_settings">إعدادات</span></button>
   </nav>
 </div>
 
@@ -432,7 +439,7 @@ nav.bottom button.active{color:var(--accent);}
 <script>
 // ---------- STATE ----------
 let state = {
-  pin: null, darkMode: false,
+  pin: null, darkMode: false, language: 'ar',
   transactions: [], dailyMeta: {}, parts: [], maintenanceLog: [],
   reminders: [], suppliers: [], customers: [], voiceNotes: [], tripStart: null,
   parkingSpot: null, parkAutoTrack: false, fuelLogs: [], carInfo: {type:'', model:'', year:''}
@@ -443,8 +450,8 @@ let pinBuffer = '', pinSetupStage = null, pinSetupFirst = '';
 
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function fmt(n){ n = Number(n)||0; return n.toLocaleString('ar-EG',{maximumFractionDigits:1}); }
-function dateAr(str){ const d=new Date(str+'T00:00:00'); return d.toLocaleDateString('ar-EG',{weekday:'short',day:'numeric',month:'short'}); }
+function fmt(n){ n = Number(n)||0; return n.toLocaleString(localeTag(),{maximumFractionDigits:1}); }
+function dateAr(str){ const d=new Date(str+'T00:00:00'); return d.toLocaleDateString(localeTag(),{weekday:'short',day:'numeric',month:'short'}); }
 
 let saveTimer=null;
 function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveData,350); }
@@ -457,11 +464,171 @@ async function loadData(){
 const EXPENSE_CATS = ['بنزين','غاز','صيانة','تغيير زيت','غسيل','مخالفات','شخصي','صيانة كاوتش','جراچ سيارة','إكراميات','نفقة نور الشهرية','مصروف شخصي لنور','مشتريات منزلية','فاتورة الغاز','شحن كارت كهرباء','فاتورة المياه','فاتورة الخط الأرضي','فاتورة النت','شحن رصيد للموبايل','قسط الجمعية','تجديد رخصة سيارة','تجديد رخصة شخصية','أخرى'];
 const INCOME_SOURCES = ['DiDi','توصيل طلاب','مشوار شخصي'];
 
+// ---------- I18N ----------
+let currentLang = 'ar';
+function localeTag(){ return currentLang==='ar' ? 'ar-EG' : 'en-US'; }
+const CATEGORY_EN = {
+  'بنزين':'Fuel','غاز':'Gas','صيانة':'Maintenance','تغيير زيت':'Oil change','غسيل':'Car wash','مخالفات':'Fines','شخصي':'Personal',
+  'صيانة كاوتش':'Tire maintenance','جراچ سيارة':'Car garage/parking','إكراميات':'Tips','نفقة نور الشهرية':"Nour's monthly allowance",
+  'مصروف شخصي لنور':"Nour's personal expense",'مشتريات منزلية':'Household shopping','فاتورة الغاز':'Gas bill','شحن كارت كهرباء':'Electricity top-up',
+  'فاتورة المياه':'Water bill','فاتورة الخط الأرضي':'Landline bill','فاتورة النت':'Internet bill','شحن رصيد للموبايل':'Mobile credit top-up',
+  'قسط الجمعية':'Association installment','تجديد رخصة سيارة':'Car license renewal','تجديد رخصة شخصية':'Personal license renewal','أخرى':'Other',
+  'DiDi':'DiDi','توصيل طلاب':'Student transport','مشوار شخصي':'Personal trip',
+  'رخصة':'License','فحص دوري':'Periodic inspection','تأمين':'Insurance'
+};
+function catLabel(cat){ return currentLang==='ar' ? cat : (CATEGORY_EN[cat]||cat); }
+const I18N = { ar:{
+  nav_home:'الرئيسية', nav_log:'السجل', nav_maint:'الصيانة', nav_contacts:'جهات اتصال', nav_calc:'الحاسبة', nav_settings:'إعدادات',
+  reg_day:'📅 يوم التسجيل', summary_title:'ملخص اليوم', total_income:'إجمالي الدخل', total_expense:'إجمالي المصروفات', net_profit:'صافي الربح',
+  trip_title:'⏱️ رحلة حالية', trip_start:'بدء رحلة', trip_end:'إنهاء الرحلة',
+  parking_title:'🅿️ مكان ركن العربية', parking_auto:'تتبع تلقائي (لازم التطبيق يكون فاتح)', parking_save:'📍 احفظ مكان ركني دلوقتي',
+  add_income:'+ دخل', add_expense:'+ مصروف',
+  today_data_title:'بيانات اليوم', meta_trips:'عدد الرحلات', meta_odo:'قراءة العداد (كم)', meta_hours:'ساعات العمل', meta_save:'حفظ بيانات اليوم',
+  voice_title:'🎙️ ملاحظات صوتية', voice_start:'بدء تسجيل', voice_stop:'إيقاف التسجيل', today_tx_title:'معاملات اليوم', month_net:'صافي الشهر',
+  no_tx_today:'لا توجد معاملات في هذا اليوم',
+  add_income_title:'🟢 إضافة دخل', add_expense_title:'🔴 إضافة مصروف', amount_label:'المبلغ (جنيه)', source_label:'المصدر', type_label:'النوع',
+  note_label:'ملاحظة (اختياري)', cancel:'إلغاء', delete_btn:'حذف', save_btn:'حفظ',
+  trip_ended:'🏁 انتهت الرحلة', trip_log_hint:'سجّل دخل الرحلة دي علطول', ignore:'تجاهل', minute_word:'دقيقة', hour_word:'ساعة', trip_duration_note:'مدة الرحلة',
+  mic_permission:'محتاج تسمح للتطبيق باستخدام الميكروفون',
+  geo_unsupported:'الموقع الجغرافي غير مدعوم على هذا الجهاز', geo_permission:'محتاج تسمح للتطبيق بالوصول لموقعك',
+  parking_auto_saved:'📍 تم رصد توقفك وحفظ مكان ركن العربية تلقائيًا', parking_none:'لا يوجد مكان محفوظ بعد',
+  parking_auto_label:'🔵 اتحفظ تلقائي', parking_manual_label:'📍 اتحفظ يدويًا', open_maps:'🗺️ افتح في خرائط جوجل', share_whatsapp:'💬 مشاركة واتساب',
+  parking_wa_text:'مكان ركن عربيتي',
+  overdue_by:'جاوزت الموعد بـ {n} كم', remaining_km:'باقي {n} كم على الموعد', reminder_overdue:'انتهى موعده', reminder_due:'خلال {n} يوم',
+  tab_record:'السجل', tab_reports:'تقارير', search_placeholder:'بحث بتاريخ أو ملاحظة...', filter_all:'الكل', filter_income:'دخل', filter_expense:'مصروف',
+  no_data:'لا توجد بيانات', income_word:'دخل', expense_word:'مصروف', no_filter_match:'لا شيء يطابق الفلتر',
+  period_daily:'يومي', period_weekly:'أسبوعي', period_monthly:'شهري', report_default_title:'التقرير',
+  report_daily_title:'التقرير اليومي', report_weekly_title:'التقرير الأسبوعي (آخر 7 أيام)', report_monthly_title:'التقرير الشهري',
+  report_didi:'دخل DiDi', report_students:'دخل الطلاب', report_personal:'مشاوير شخصية', report_expenses:'المصروفات', report_net:'صافي الربح',
+  kpi_cost_km:'تكلفة الكيلومتر', kpi_profit_hr:'ربح الساعة', kpi_trips:'عدد الرحلات', kpi_avg_day:'متوسط صافي/يوم',
+  tab_parts:'قطع الغيار', tab_fuel:'الوقود', tab_reminders:'تراخيص وتأمين', tab_log:'سجل الصيانة',
+  add_part_link:'➕ إضافة قطعة غيار جديدة', add_fuel_link:'➕ تسجيل تعبئة وقود', add_reminder_link:'➕ إضافة تذكير جديد (رخصة / فحص / تأمين)',
+  fuel_avg_title:'⛽ متوسط الاستهلاك', fuel_avg_unit_label:'كم لكل لتر',
+  add_part_title:'➕ إضافة قطعة غيار', part_name:'اسم القطعة', install_date:'تاريخ التركيب', install_odo:'قراءة العداد عند التركيب (كم)',
+  lifespan:'العمر الافتراضي (كم)', lifespan_ph:'مثال: 5000', no_parts:'لا توجد قطع مسجّلة', install_label:'تركيب', lifespan_label:'العمر',
+  record_odo_hint:'سجّل قراءة العداد اليوم لمتابعة الموعد', log_change_btn:'تسجيل تغيير', log_change_title:'تسجيل تغيير',
+  change_date:'تاريخ التغيير', cost_label:'التكلفة (جنيه)', current_odo:'قراءة العداد الحالية', no_maint_log:'لا يوجد سجل صيانة بعد', at_km:'عند',
+  fuel_sheet_title:'⛽ تسجيل تعبئة وقود', fuel_date:'تاريخ التعبئة', fuel_liters:'عدد اللترات اللي اتضافت', fuel_price_optional:'سعر اللتر (اختياري)',
+  no_fuel_logs:'لا توجد تعبئات مسجّلة بعد', liter_unit:'لتر', km_per_liter:'كم/لتر', egp_per_liter:'ج/لتر', km_unit:'كم',
+  add_reminder_title:'➕ إضافة تذكير', reminder_type:'النوع', opt_license:'رخصة القيادة', opt_inspection:'فحص دوري', opt_insurance:'تأمين',
+  opt_gameya:'قسط الجمعية (شهري)', opt_other:'أخرى', reminder_name:'اسم/تفاصيل', reminder_name_ph:'مثال: رخصة السيارة', due_date:'تاريخ الاستحقاق',
+  recur_days_before:'تذكيري قبل بداية الشهر بعدد أيام', no_reminders:'لا توجد تذكيرات', monthly_before:'شهريًا، قبل بداية الشهر بـ{n} يوم',
+  overdue_word:'منتهي', days_word:'يوم',
+  tab_suppliers:'موردين وورش', tab_customers:'عملاء', add_supplier_link:'➕ إضافة مورد / ورشة', add_customer_link:'➕ إضافة عميل',
+  add_supplier_title:'➕ إضافة مورد / ورشة', name_label:'الاسم', phone_label:'رقم الهاتف', address_label:'العنوان', specialty_label:'التخصص',
+  specialty_ph:'مثال: كهرباء، ميكانيكا', no_suppliers:'لا يوجد موردين بعد', add_customer_title:'➕ إضافة عميل', notes_label:'ملاحظات', no_customers:'لا يوجد عملاء بعد',
+  tab_basic:'حاسبة عادية', tab_trip:'تكلفة الرحلة', calc_error:'خطأ',
+  distance_label:'المسافة (كم)', consumption_label:'استهلاك السيارة (كم لكل لتر)', price_label:'سعر اللتر (جنيه)', fare_label:'الأجرة المتوقعة (اختياري)',
+  calc_button:'احسب', fuel_cost_label:'تكلفة الوقود', expected_net_label:'صافي الربح المتوقع',
+  car_info_title:'🚘 بيانات العربية', car_type:'نوع/ماركة العربية', car_type_ph:'مثال: هيونداي', car_model:'الموديل', car_model_ph:'مثال: إلنترا',
+  car_year:'سنة الصنع', car_year_ph:'مثال: 2019', save_car_info:'حفظ بيانات العربية', saved_car_info:'تم حفظ بيانات العربية',
+  language_title:'🌐 اللغة', lang_ar:'العربية', lang_en:'English',
+  pin_title:'🔒 حماية برمز PIN', pin_sub:'قفل التطبيق برمز من 4 أرقام', dark_title:'🌙 الوضع الليلي', dark_sub:'مريح للعين أثناء القيادة ليلاً',
+  gdrive_title:'☁️ ربط Google Drive (نسخ احتياطي تلقائي)', gdrive_hint:'أول مرة بس: الصق Google Client ID اللي عملته (شوف التعليمات)',
+  client_id_label:'Google Client ID', show_client_id_btn:'عرض الكود المحفوظ بالتفصيل', connected_label:'متصل بحساب Google',
+  no_backup_yet:'لا يوجد نسخة احتياطية بعد', backup_now_btn:'نسخ احتياطي الآن', restore_drive_btn:'استرجاع من Drive', sign_in_google_btn:'🔐 تسجيل الدخول بـ Google',
+  backup_restore_title:'💾 نسخ احتياطي واستعادة', export_backup_btn:'تصدير نسخة احتياطية', import_backup_btn:'استيراد نسخة',
+  backup_placeholder:'ستظهر بيانات النسخة الاحتياطية هنا...', export_data_title:'📤 تصدير البيانات', export_csv_btn:'تصدير Excel/CSV',
+  client_id_detail_title:'تفاصيل الكود المحفوظ', saved_code_now:'الكود المحفوظ حاليًا', chars_word:'حرف', expected_code:'الكود الصحيح المتوقع',
+  code_match:'✅ الكود مطابق تمامًا', code_mismatch:'❌ الكود غير مطابق', ok_word:'تمام',
+  need_client_id:'محتاج تحط Google Client ID الأول واحفظه', gsi_load_fail:'تعذر تحميل خدمة تسجيل الدخول من Google، تأكد من الإنترنت',
+  signin_fail:'تعذر تسجيل الدخول: ', signout_switch:'🔓 تسجيل خروج / تبديل الحساب', need_signin_again:'محتاج تسجل الدخول تاني',
+  backup_success:'تم النسخ الاحتياطي بنجاح ✅', backup_error:'حصل خطأ أثناء النسخ الاحتياطي، حاول تاني',
+  no_drive_backup:'لا يوجد نسخة احتياطية محفوظة على Drive', restore_success:'تم الاسترجاع من Drive بنجاح ✅', restore_error:'حصل خطأ أثناء الاسترجاع، حاول تاني',
+  last_backup_label:'آخر نسخة احتياطية: ', import_success:'تم استيراد النسخة الاحتياطية بنجاح', import_invalid:'صيغة غير صحيحة',
+  csv_fallback:'تعذر التحميل المباشر - تم وضع البيانات في مربع النص بالأسفل', saved_client_id_ok:'تم الحفظ، دوس تسجيل الدخول بـ Google دلوقتي',
+  enter_pin:'أدخل رمز الدخول', wrong_pin:'رمز غير صحيح', confirm_pin:'أكّد الرمز', pin_mismatch:'الرمزين غير متطابقين، حاول تاني',
+  clear_word:'مسح', delete_word:'حذف',
+  csv_date:'التاريخ', csv_type:'النوع', csv_category:'الفئة', csv_amount:'المبلغ', csv_note:'ملاحظة',
+  csv_total_income:'إجمالي الدخل', csv_total_expense:'إجمالي المصروفات', csv_total_net:'صافي الربح'
+}, en:{
+  nav_home:'Home', nav_log:'Log', nav_maint:'Maintenance', nav_contacts:'Contacts', nav_calc:'Calculator', nav_settings:'Settings',
+  reg_day:'📅 Recording day', summary_title:"Today's Summary", total_income:'Total Income', total_expense:'Total Expenses', net_profit:'Net Profit',
+  trip_title:'⏱️ Current Trip', trip_start:'Start Trip', trip_end:'End Trip',
+  parking_title:'🅿️ Car Parking Spot', parking_auto:'Auto-track (app must stay open)', parking_save:'📍 Save my parking spot now',
+  add_income:'+ Income', add_expense:'+ Expense',
+  today_data_title:"Today's Data", meta_trips:'Number of Trips', meta_odo:'Odometer Reading (km)', meta_hours:'Work Hours', meta_save:"Save Today's Data",
+  voice_title:'🎙️ Voice Notes', voice_start:'Start Recording', voice_stop:'Stop Recording', today_tx_title:"Today's Transactions", month_net:'Month Net',
+  no_tx_today:'No transactions today',
+  add_income_title:'🟢 Add Income', add_expense_title:'🔴 Add Expense', amount_label:'Amount (EGP)', source_label:'Source', type_label:'Type',
+  note_label:'Note (optional)', cancel:'Cancel', delete_btn:'Delete', save_btn:'Save',
+  trip_ended:'🏁 Trip Ended', trip_log_hint:'Log this trip income right away', ignore:'Ignore', minute_word:'min', hour_word:'hr', trip_duration_note:'Trip duration',
+  mic_permission:'Need microphone permission',
+  geo_unsupported:'Geolocation is not supported on this device', geo_permission:'Need location permission',
+  parking_auto_saved:'📍 Detected your stop and saved parking spot automatically', parking_none:'No location saved yet',
+  parking_auto_label:'🔵 Saved automatically', parking_manual_label:'📍 Saved manually', open_maps:'🗺️ Open in Google Maps', share_whatsapp:'💬 Share via WhatsApp',
+  parking_wa_text:'My car parking spot',
+  overdue_by:'Overdue by {n} km', remaining_km:'{n} km left until due', reminder_overdue:'is overdue', reminder_due:'in {n} days',
+  tab_record:'Log', tab_reports:'Reports', search_placeholder:'Search by date or note...', filter_all:'All', filter_income:'Income', filter_expense:'Expense',
+  no_data:'No data', income_word:'Income', expense_word:'Expense', no_filter_match:'Nothing matches the filter',
+  period_daily:'Daily', period_weekly:'Weekly', period_monthly:'Monthly', report_default_title:'Report',
+  report_daily_title:'Daily Report', report_weekly_title:'Weekly Report (last 7 days)', report_monthly_title:'Monthly Report',
+  report_didi:'DiDi Income', report_students:'Student Transport Income', report_personal:'Personal Trips', report_expenses:'Expenses', report_net:'Net Profit',
+  kpi_cost_km:'Cost per km', kpi_profit_hr:'Profit per hour', kpi_trips:'Number of trips', kpi_avg_day:'Avg net/day',
+  tab_parts:'Parts', tab_fuel:'Fuel', tab_reminders:'Licenses & Insurance', tab_log:'Maintenance Log',
+  add_part_link:'➕ Add new part', add_fuel_link:'➕ Log fuel fill-up', add_reminder_link:'➕ Add new reminder (license/inspection/insurance)',
+  fuel_avg_title:'⛽ Average Consumption', fuel_avg_unit_label:'km per liter',
+  add_part_title:'➕ Add Part', part_name:'Part name', install_date:'Install date', install_odo:'Odometer at install (km)',
+  lifespan:'Expected lifespan (km)', lifespan_ph:'e.g. 5000', no_parts:'No parts logged yet', install_label:'Installed', lifespan_label:'Lifespan',
+  record_odo_hint:"Log today's odometer reading to track the due date", log_change_btn:'Log change', log_change_title:'Log change',
+  change_date:'Change date', cost_label:'Cost (EGP)', current_odo:'Current odometer', no_maint_log:'No maintenance log yet', at_km:'at',
+  fuel_sheet_title:'⛽ Log Fuel Fill-up', fuel_date:'Fill-up date', fuel_liters:'Liters added', fuel_price_optional:'Price per liter (optional)',
+  no_fuel_logs:'No fuel logs yet', liter_unit:'L', km_per_liter:'km/L', egp_per_liter:'EGP/L', km_unit:'km',
+  add_reminder_title:'➕ Add Reminder', reminder_type:'Type', opt_license:'Driving license', opt_inspection:'Periodic inspection', opt_insurance:'Insurance',
+  opt_gameya:'Association installment (monthly)', opt_other:'Other', reminder_name:'Name/details', reminder_name_ph:'e.g. Car license', due_date:'Due date',
+  recur_days_before:'Remind me this many days before month start', no_reminders:'No reminders yet', monthly_before:'Monthly, {n} days before month start',
+  overdue_word:'Overdue', days_word:'days',
+  tab_suppliers:'Suppliers & Garages', tab_customers:'Customers', add_supplier_link:'➕ Add supplier/garage', add_customer_link:'➕ Add customer',
+  add_supplier_title:'➕ Add Supplier/Garage', name_label:'Name', phone_label:'Phone number', address_label:'Address', specialty_label:'Specialty',
+  specialty_ph:'e.g. Electrical, Mechanical', no_suppliers:'No suppliers yet', add_customer_title:'➕ Add Customer', notes_label:'Notes', no_customers:'No customers yet',
+  tab_basic:'Basic Calculator', tab_trip:'Trip Cost', calc_error:'Error',
+  distance_label:'Distance (km)', consumption_label:'Car consumption (km per liter)', price_label:'Price per liter (EGP)', fare_label:'Expected fare (optional)',
+  calc_button:'Calculate', fuel_cost_label:'Fuel cost', expected_net_label:'Expected net profit',
+  car_info_title:'🚘 Car Info', car_type:'Car type/brand', car_type_ph:'e.g. Hyundai', car_model:'Model', car_model_ph:'e.g. Elantra',
+  car_year:'Manufacture year', car_year_ph:'e.g. 2019', save_car_info:'Save car info', saved_car_info:'Car info saved',
+  language_title:'🌐 Language', lang_ar:'العربية', lang_en:'English',
+  pin_title:'🔒 PIN Protection', pin_sub:'Lock the app with a 4-digit code', dark_title:'🌙 Dark Mode', dark_sub:'Easier on the eyes while driving at night',
+  gdrive_title:'☁️ Connect Google Drive (auto backup)', gdrive_hint:'First time only: paste the Google Client ID you created (see instructions)',
+  client_id_label:'Google Client ID', show_client_id_btn:'Show saved code in detail', connected_label:'Connected to Google account',
+  no_backup_yet:'No backup yet', backup_now_btn:'Backup now', restore_drive_btn:'Restore from Drive', sign_in_google_btn:'🔐 Sign in with Google',
+  backup_restore_title:'💾 Backup & Restore', export_backup_btn:'Export backup', import_backup_btn:'Import backup',
+  backup_placeholder:'Backup data will appear here...', export_data_title:'📤 Export Data', export_csv_btn:'Export Excel/CSV',
+  client_id_detail_title:'Saved Code Details', saved_code_now:'Currently saved code', chars_word:'chars', expected_code:'Expected correct code',
+  code_match:'✅ Code matches exactly', code_mismatch:'❌ Code does not match', ok_word:'OK',
+  need_client_id:'You need to add and save a Google Client ID first', gsi_load_fail:'Could not load Google sign-in service, check your internet',
+  signin_fail:'Sign-in failed: ', signout_switch:'🔓 Sign out / switch account', need_signin_again:'Need to sign in again',
+  backup_success:'Backup successful ✅', backup_error:'Backup error, try again',
+  no_drive_backup:'No backup saved on Drive', restore_success:'Restored from Drive successfully ✅', restore_error:'Restore error, try again',
+  last_backup_label:'Last backup: ', import_success:'Backup imported successfully', import_invalid:'Invalid format',
+  csv_fallback:'Direct download failed - data placed in the text box below', saved_client_id_ok:'Saved. Tap Sign in with Google now',
+  enter_pin:'Enter your PIN', wrong_pin:'Incorrect PIN', confirm_pin:'Confirm PIN', pin_mismatch:"PINs don't match, try again",
+  clear_word:'Clear', delete_word:'Delete',
+  csv_date:'Date', csv_type:'Type', csv_category:'Category', csv_amount:'Amount', csv_note:'Note',
+  csv_total_income:'Total Income', csv_total_expense:'Total Expenses', csv_total_net:'Net Profit'
+}};
+function t(key, vars){
+  let s = (I18N[currentLang] && I18N[currentLang][key]) || I18N.ar[key] || key;
+  if(vars) Object.keys(vars).forEach(k=>{ s = s.replace('{'+k+'}', vars[k]); });
+  return s;
+}
+function applyStaticI18n(){
+  document.documentElement.setAttribute('lang', currentLang);
+  document.documentElement.setAttribute('dir', currentLang==='ar'?'rtl':'ltr');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+}
+function setLanguage(lang){
+  currentLang = lang; state.language = lang; scheduleSave();
+  applyStaticI18n(); buildLockKeypad(); renderAll();
+}
+
 // ---------- INIT ----------
 async function init(){
   await loadData();
+  currentLang = state.language || 'ar';
   applyTheme();
-  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
+  applyStaticI18n();
+  document.getElementById('headerDate').textContent = new Date().toLocaleDateString(localeTag(),{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('homeDate').value = selectedHomeDate;
   buildLockKeypad();
   buildCalcGrid();
@@ -491,7 +658,7 @@ function renderMonthBadge(){
   const exp = txs.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
   const net = inc-exp;
   const el = document.getElementById('monthNetBadge');
-  if(el) el.innerHTML = `صافي الشهر: <span style="color:${net>=0?'var(--income)':'var(--expense)'}">${fmt(net)}</span>`;
+  if(el) el.innerHTML = `${t('month_net')}: <span style="color:${net>=0?'var(--income)':'var(--expense)'}">${fmt(net)}</span>`;
 }
 
 // ---------- NAV ----------
@@ -529,16 +696,16 @@ function bindHome(){
 function openTxSheet(type, existing){
   const isInc = type==='income';
   const options = isInc?INCOME_SOURCES:EXPENSE_CATS;
-  const optHtml = options.map(o=>`<option value="${o}" ${existing&&existing.category===o?'selected':''}>${o}</option>`).join('');
+  const optHtml = options.map(o=>`<option value="${o}" ${existing&&existing.category===o?'selected':''}>${catLabel(o)}</option>`).join('');
   openSheet(`
-    <h2>${isInc?'🟢 إضافة دخل':'🔴 إضافة مصروف'}</h2>
-    <div class="field"><label>المبلغ (جنيه)</label><input type="number" id="txAmount" inputmode="decimal" value="${existing?existing.amount:''}" autofocus></div>
-    <div class="field"><label>${isInc?'المصدر':'النوع'}</label><select id="txCat">${optHtml}</select></div>
-    <div class="field"><label>ملاحظة (اختياري)</label><input type="text" id="txNote" value="${existing?(existing.note||''):''}"></div>
+    <h2>${isInc?t('add_income_title'):t('add_expense_title')}</h2>
+    <div class="field"><label>${t('amount_label')}</label><input type="number" id="txAmount" inputmode="decimal" value="${existing?existing.amount:''}" autofocus></div>
+    <div class="field"><label>${isInc?t('source_label'):t('type_label')}</label><select id="txCat">${optHtml}</select></div>
+    <div class="field"><label>${t('note_label')}</label><input type="text" id="txNote" value="${existing?(existing.note||''):''}"></div>
     <div class="sheet-actions">
-      <button class="cancel" id="sheetCancel">إلغاء</button>
-      ${existing?'<button class="danger" id="sheetDelete">حذف</button>':''}
-      <button class="confirm" id="sheetSave">حفظ</button>
+      <button class="cancel" id="sheetCancel">${t('cancel')}</button>
+      ${existing?`<button class="danger" id="sheetDelete">${t('delete_btn')}</button>`:''}
+      <button class="confirm" id="sheetSave">${t('save_btn')}</button>
     </div>
   `);
   document.getElementById('sheetCancel').addEventListener('click', closeSheet);
@@ -584,15 +751,15 @@ function getAlerts(){
       const used = curOdo - p.installOdometer;
       const remaining = p.lifespanKm - used;
       const pct = used/p.lifespanKm;
-      if(remaining<=0) alerts.push(`⛔ ${p.name}: جاوزت الموعد بـ ${fmt(Math.abs(remaining))} كم`);
-      else if(pct>=0.85) alerts.push(`⚠️ ${p.name}: باقي ${fmt(remaining)} كم على الموعد`);
+      if(remaining<=0) alerts.push(`⛔ ${p.name}: ${t('overdue_by',{n:fmt(Math.abs(remaining))})}`);
+      else if(pct>=0.85) alerts.push(`⚠️ ${p.name}: ${t('remaining_km',{n:fmt(remaining)})}`);
     });
   }
   const today = new Date();
   state.reminders.forEach(r=>{
     const d = computeReminderDate(r);
     const days = Math.ceil((d-today)/86400000);
-    if(days<=30 && days>=-3650) alerts.push(days<0?`⛔ ${r.name} انتهى موعده`:`⏰ ${r.name} خلال ${days} يوم`);
+    if(days<=30 && days>=-3650) alerts.push(days<0?`⛔ ${r.name} ${t('reminder_overdue')}`:`⏰ ${r.name} ${t('reminder_due',{n:days})}`);
   });
   return alerts;
 }
@@ -615,14 +782,14 @@ function renderHome(){
   const alerts = getAlerts();
   document.getElementById('homeAlerts').innerHTML = alerts.map(a=>`<div class="alert"><span class="ic">🔔</span>${a}</div>`).join('');
   const list = document.getElementById('homeTxList');
-  if(!d.txs.length){ list.innerHTML = '<div class="empty">لا توجد معاملات في هذا اليوم</div>'; }
+  if(!d.txs.length){ list.innerHTML = `<div class="empty">${t('no_tx_today')}</div>`; }
   else {
-    list.innerHTML = d.txs.map(t=>`
-      <div class="txrow ${t.type==='income'?'inc':'exp'}" data-id="${t.id}">
+    list.innerHTML = d.txs.map(t2=>`
+      <div class="txrow ${t2.type==='income'?'inc':'exp'}" data-id="${t2.id}">
         <div class="dot"></div>
-        <div class="info"><div class="cat">${t.category}</div>${t.note?`<div class="note">${escapeHtml(t.note)}</div>`:''}</div>
-        <div class="amt">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
-        <button class="del" data-del="${t.id}">✕</button>
+        <div class="info"><div class="cat">${catLabel(t2.category)}</div>${t2.note?`<div class="note">${escapeHtml(t2.note)}</div>`:''}</div>
+        <div class="amt">${t2.type==='income'?'+':'-'}${fmt(t2.amount)}</div>
+        <button class="del" data-del="${t2.id}">✕</button>
       </div>`).join('');
     list.querySelectorAll('.txrow').forEach(row=>{
       row.addEventListener('click', e=>{
@@ -681,16 +848,16 @@ function updateTripUI(){
   }
 }
 function openTripIncomeSheet(mins){
-  const durText = mins<60 ? `${mins} دقيقة` : `${Math.floor(mins/60)} ساعة و${mins%60} دقيقة`;
-  const optHtml = INCOME_SOURCES.map(o=>`<option value="${o}">${o}</option>`).join('');
+  const durText = mins<60 ? `${mins} ${t('minute_word')}` : `${Math.floor(mins/60)} ${t('hour_word')} ${mins%60} ${t('minute_word')}`;
+  const optHtml = INCOME_SOURCES.map(o=>`<option value="${o}">${catLabel(o)}</option>`).join('');
   openSheet(`
-    <h2>🏁 انتهت الرحلة (${durText})</h2>
-    <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 12px;">سجّل دخل الرحلة دي علطول</p>
-    <div class="field"><label>المبلغ (جنيه)</label><input type="number" id="tripIncAmount" inputmode="decimal" autofocus></div>
-    <div class="field"><label>المصدر</label><select id="tripIncCat">${optHtml}</select></div>
+    <h2>${t('trip_ended')} (${durText})</h2>
+    <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 12px;">${t('trip_log_hint')}</p>
+    <div class="field"><label>${t('amount_label')}</label><input type="number" id="tripIncAmount" inputmode="decimal" autofocus></div>
+    <div class="field"><label>${t('source_label')}</label><select id="tripIncCat">${optHtml}</select></div>
     <div class="sheet-actions">
-      <button class="cancel" id="sheetCancel">تجاهل</button>
-      <button class="confirm" id="sheetSave">حفظ</button>
+      <button class="cancel" id="sheetCancel">${t('ignore')}</button>
+      <button class="confirm" id="sheetSave">${t('save_btn')}</button>
     </div>
   `);
   document.getElementById('sheetCancel').addEventListener('click', closeSheet);
@@ -698,7 +865,7 @@ function openTripIncomeSheet(mins){
     const amount = Number(document.getElementById('tripIncAmount').value)||0;
     if(amount<=0){ closeSheet(); return; }
     const cat = document.getElementById('tripIncCat').value;
-    state.transactions.push({id:uid(), date:selectedHomeDate, type:'income', amount, category:cat, note:`مدة الرحلة: ${durText}`});
+    state.transactions.push({id:uid(), date:selectedHomeDate, type:'income', amount, category:cat, note:`${t('trip_duration_note')}: ${durText}`});
     scheduleSave(); closeSheet(); renderAll();
   });
 }
@@ -724,23 +891,23 @@ async function toggleRecording(){
       const reader = new FileReader();
       reader.onloadend = ()=>{
         if(!state.voiceNotes) state.voiceNotes = [];
-        state.voiceNotes.push({id:uid(), date:selectedHomeDate, time:new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}), dataUrl:reader.result});
+        state.voiceNotes.push({id:uid(), date:selectedHomeDate, time:new Date().toLocaleTimeString(localeTag(),{hour:'2-digit',minute:'2-digit'}), dataUrl:reader.result});
         scheduleSave(); renderVoiceList();
       };
       reader.readAsDataURL(blob);
       stream.getTracks().forEach(t=>t.stop());
       isRecording = false;
       document.getElementById('recIcon').textContent = '🎙️';
-      document.getElementById('recLabel').textContent = 'بدء تسجيل';
+      document.getElementById('recLabel').textContent = t('voice_start');
       document.getElementById('btnRecordVoice').style.background = 'var(--accent)';
     };
     mediaRecorder.start();
     isRecording = true;
     document.getElementById('recIcon').textContent = '⏺️';
-    document.getElementById('recLabel').textContent = 'إيقاف التسجيل';
+    document.getElementById('recLabel').textContent = t('voice_stop');
     document.getElementById('btnRecordVoice').style.background = 'var(--expense)';
   }catch(e){
-    alertMsg('محتاج تسمح للتطبيق باستخدام الميكروفون');
+    alertMsg(t('mic_permission'));
   }
 }
 function renderVoiceList(){
@@ -775,7 +942,7 @@ function bindParking(){
   renderParkingInfo();
 }
 function startParkTracking(){
-  if(!navigator.geolocation){ alertMsg('الموقع الجغرافي غير مدعوم على هذا الجهاز'); return; }
+  if(!navigator.geolocation){ alertMsg(t('geo_unsupported')); return; }
   parkWasMoving = false; parkStillSince = null;
   parkWatchId = navigator.geolocation.watchPosition(pos=>{
     const speed = pos.coords.speed; // m/s
@@ -793,29 +960,29 @@ function stopParkTracking(){
   if(parkWatchId!=null){ navigator.geolocation.clearWatch(parkWatchId); parkWatchId=null; }
 }
 function saveParkingNow(){
-  if(!navigator.geolocation){ alertMsg('الموقع الجغرافي غير مدعوم على هذا الجهاز'); return; }
+  if(!navigator.geolocation){ alertMsg(t('geo_unsupported')); return; }
   navigator.geolocation.getCurrentPosition(pos=>{
     savePark(pos.coords.latitude, pos.coords.longitude, false);
-  }, ()=>{ alertMsg('محتاج تسمح للتطبيق بالوصول لموقعك'); }, {enableHighAccuracy:true});
+  }, ()=>{ alertMsg(t('geo_permission')); }, {enableHighAccuracy:true});
 }
 function savePark(lat, lng, auto){
-  state.parkingSpot = {lat, lng, time:new Date().toLocaleString('ar-EG'), auto};
+  state.parkingSpot = {lat, lng, time:new Date().toLocaleString(localeTag()), auto};
   scheduleSave();
   renderParkingInfo();
-  if(auto) alertMsg('📍 تم رصد توقفك وحفظ مكان ركن العربية تلقائيًا');
+  if(auto) alertMsg(t('parking_auto_saved'));
 }
 function renderParkingInfo(){
   const el = document.getElementById('parkingInfo');
   if(!el) return;
   const p = state.parkingSpot;
-  if(!p){ el.innerHTML = '<div class="empty">لا يوجد مكان محفوظ بعد</div>'; return; }
+  if(!p){ el.innerHTML = `<div class="empty">${t('parking_none')}</div>`; return; }
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`;
-  const waText = encodeURIComponent(`مكان ركن عربيتي: ${mapsUrl}`);
+  const waText = encodeURIComponent(`${t('parking_wa_text')}: ${mapsUrl}`);
   el.innerHTML = `
-    <div class="pmeta" style="margin-bottom:8px;">${p.auto?'🔵 اتحفظ تلقائي':'📍 اتحفظ يدويًا'} · ${p.time}</div>
+    <div class="pmeta" style="margin-bottom:8px;">${p.auto?t('parking_auto_label'):t('parking_manual_label')} · ${p.time}</div>
     <div style="display:flex;gap:8px;">
-      <a class="smallbtn" style="flex:1;text-align:center;text-decoration:none;" href="${mapsUrl}" target="_blank">🗺️ افتح في خرائط جوجل</a>
-      <a class="smallbtn" style="flex:1;text-align:center;text-decoration:none;" href="https://wa.me/?text=${waText}" target="_blank">💬 مشاركة واتساب</a>
+      <a class="smallbtn" style="flex:1;text-align:center;text-decoration:none;" href="${mapsUrl}" target="_blank">${t('open_maps')}</a>
+      <a class="smallbtn" style="flex:1;text-align:center;text-decoration:none;" href="https://wa.me/?text=${waText}" target="_blank">${t('share_whatsapp')}</a>
     </div>`;
 }
 
@@ -852,18 +1019,18 @@ function renderLogRecord(){
     }
     return true;
   });
-  if(!filteredDates.length){ el.innerHTML = '<div class="empty">لا توجد بيانات</div>'; return; }
+  if(!filteredDates.length){ el.innerHTML = `<div class="empty">${t('no_data')}</div>`; return; }
   el.innerHTML = filteredDates.map(d=>{
     const day = computeDay(d);
-    const txs = ft==='all'?day.txs:day.txs.filter(t=>t.type===ft);
+    const txs = ft==='all'?day.txs:day.txs.filter(tx=>tx.type===ft);
     return `<div class="daycard" data-d="${d}">
       <div class="top"><div class="d">${dateAr(d)}</div><div class="n" style="color:${day.net>=0?'var(--income)':'var(--expense)'}">${fmt(day.net)}</div></div>
-      <div class="sub"><span>دخل ${fmt(day.income)}</span><span>مصروف ${fmt(day.expense)}</span></div>
-      <div class="details"><div class="txlist">${txs.map(t=>`
-        <div class="txrow ${t.type==='income'?'inc':'exp'}" data-id="${t.id}">
-          <div class="dot"></div><div class="info"><div class="cat">${t.category}</div>${t.note?`<div class="note">${escapeHtml(t.note)}</div>`:''}</div>
-          <div class="amt">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
-        </div>`).join('') || '<div class="empty">لا شيء يطابق الفلتر</div>'}</div></div>
+      <div class="sub"><span>${t('income_word')} ${fmt(day.income)}</span><span>${t('expense_word')} ${fmt(day.expense)}</span></div>
+      <div class="details"><div class="txlist">${txs.map(tx=>`
+        <div class="txrow ${tx.type==='income'?'inc':'exp'}" data-id="${tx.id}">
+          <div class="dot"></div><div class="info"><div class="cat">${catLabel(tx.category)}</div>${tx.note?`<div class="note">${escapeHtml(tx.note)}</div>`:''}</div>
+          <div class="amt">${tx.type==='income'?'+':'-'}${fmt(tx.amount)}</div>
+        </div>`).join('') || `<div class="empty">${t('no_filter_match')}</div>`}</div></div>
     </div>`;
   }).join('');
   el.querySelectorAll('.daycard').forEach(card=>{
@@ -898,13 +1065,13 @@ function renderReport(period){
   const odoVals = metaEntries.filter(m=>m.odometer!=null).map(m=>m.odometer);
   const km = odoVals.length>=2 ? (odoVals[odoVals.length-1]-odoVals[0]) : null;
   const days = (new Date(e)-new Date(s))/86400000 + 1;
-  const titles = {daily:'التقرير اليومي', weekly:'التقرير الأسبوعي (آخر 7 أيام)', monthly:'التقرير الشهري'};
+  const titles = {daily:t('report_daily_title'), weekly:t('report_weekly_title'), monthly:t('report_monthly_title')};
   document.getElementById('reportTitle').textContent = titles[period];
   const max = Math.max(incDidi, incStu, incPersonal, exp, 1);
   document.getElementById('reportBars').innerHTML = [
-    ['دخل DiDi', incDidi, 'var(--income)'], ['دخل الطلاب', incStu, 'var(--accent)'], ['مشاوير شخصية', incPersonal, '#8B7FD9'], ['المصروفات', exp, 'var(--expense)']
+    [t('report_didi'), incDidi, 'var(--income)'], [t('report_students'), incStu, 'var(--accent)'], [t('report_personal'), incPersonal, '#8B7FD9'], [t('report_expenses'), exp, 'var(--expense)']
   ].map(([l,v,c])=>`<div class="barrow"><div class="lbl"><span>${l}</span><span>${fmt(v)}</span></div><div class="bartrack"><div class="barfill" style="width:${(v/max*100)}%;background:${c};"></div></div></div>`).join('')
-  + `<div class="barrow"><div class="lbl"><span>صافي الربح</span><span style="color:${net>=0?'var(--income)':'var(--expense)'}">${fmt(net)}</span></div></div>`;
+  + `<div class="barrow"><div class="lbl"><span>${t('report_net')}</span><span style="color:${net>=0?'var(--income)':'var(--expense)'}">${fmt(net)}</span></div></div>`;
   document.getElementById('repCostKm').textContent = km&&km>0 ? fmt(exp/km) : '-';
   document.getElementById('repProfitHr').textContent = hours>0 ? fmt(net/hours) : '-';
   document.getElementById('repTrips').textContent = trips||0;
@@ -927,12 +1094,12 @@ function bindMaint(){
 function cap(s){ return s[0].toUpperCase()+s.slice(1); }
 function openPartSheet(){
   openSheet(`
-    <h2>➕ إضافة قطعة غيار</h2>
-    <div class="field"><label>اسم القطعة</label><input type="text" id="pName"></div>
-    <div class="field"><label>تاريخ التركيب</label><input type="date" id="pDate" value="${todayStr()}"></div>
-    <div class="field"><label>قراءة العداد عند التركيب (كم)</label><input type="number" id="pOdo" value="${getCurrentOdometer()||''}"></div>
-    <div class="field"><label>العمر الافتراضي (كم)</label><input type="number" id="pLife" placeholder="مثال: 5000"></div>
-    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+    <h2>${t('add_part_title')}</h2>
+    <div class="field"><label>${t('part_name')}</label><input type="text" id="pName"></div>
+    <div class="field"><label>${t('install_date')}</label><input type="date" id="pDate" value="${todayStr()}"></div>
+    <div class="field"><label>${t('install_odo')}</label><input type="number" id="pOdo" value="${getCurrentOdometer()||''}"></div>
+    <div class="field"><label>${t('lifespan')}</label><input type="number" id="pLife" placeholder="${t('lifespan_ph')}"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">${t('cancel')}</button><button class="confirm" id="sheetSave">${t('save_btn')}</button></div>
   `);
   document.getElementById('sheetCancel').addEventListener('click', closeSheet);
   document.getElementById('sheetSave').addEventListener('click', ()=>{
@@ -945,20 +1112,21 @@ function openPartSheet(){
 function renderParts(){
   const curOdo = getCurrentOdometer();
   const el = document.getElementById('partsList');
-  if(!state.parts.length){ el.innerHTML='<div class="empty">لا توجد قطع مسجّلة</div>'; return; }
+  if(!state.parts.length){ el.innerHTML=`<div class="empty">${t('no_parts')}</div>`; return; }
   el.innerHTML = state.parts.map(p=>{
     const used = curOdo!=null ? curOdo-p.installOdometer : 0;
     const remaining = p.lifespanKm - used;
     const pct = p.lifespanKm ? Math.min(100, Math.max(0,(used/p.lifespanKm*100))) : 0;
     const cls = pct>=90?'danger':pct>=70?'warn':'';
+    const statusText = curOdo==null?t('record_odo_hint'):remaining<=0?t('overdue_by',{n:fmt(Math.abs(remaining))}):t('remaining_km',{n:fmt(remaining)});
     return `<div class="pitem">
       <div class="row1"><span>${p.name}</span><span>${pct.toFixed(0)}%</span></div>
-      <div class="pmeta">تركيب: ${dateAr(p.installDate)} @ ${fmt(p.installOdometer)} كم · العمر: ${fmt(p.lifespanKm)} كم</div>
-      <div class="pmeta" style="margin-top:-4px;font-weight:700;color:${remaining<=0?'var(--expense)':remaining<=p.lifespanKm*0.15?'var(--accent)':'var(--text)'}">${curOdo==null?'سجّل قراءة العداد اليوم لمتابعة الموعد':remaining<=0?`جاوزت الموعد بـ ${fmt(Math.abs(remaining))} كم`:`باقي ${fmt(remaining)} كم`}</div>
+      <div class="pmeta">${t('install_label')}: ${dateAr(p.installDate)} @ ${fmt(p.installOdometer)} ${t('km_unit')} · ${t('lifespan_label')}: ${fmt(p.lifespanKm)} ${t('km_unit')}</div>
+      <div class="pmeta" style="margin-top:-4px;font-weight:700;color:${remaining<=0?'var(--expense)':remaining<=p.lifespanKm*0.15?'var(--accent)':'var(--text)'}">${statusText}</div>
       <div class="progtrack"><div class="progfill ${cls}" style="width:${pct}%"></div></div>
       <div class="actions">
-        <button class="logbtn" data-log="${p.id}">تسجيل تغيير</button>
-        <button class="delbtn" data-del="${p.id}">حذف</button>
+        <button class="logbtn" data-log="${p.id}">${t('log_change_btn')}</button>
+        <button class="delbtn" data-del="${p.id}">${t('delete_btn')}</button>
       </div>
     </div>`;
   }).join('');
@@ -970,11 +1138,11 @@ function renderParts(){
 function logPartChange(partId){
   const part = state.parts.find(p=>p.id===partId);
   openSheet(`
-    <h2>تسجيل تغيير: ${part.name}</h2>
-    <div class="field"><label>تاريخ التغيير</label><input type="date" id="lDate" value="${todayStr()}"></div>
-    <div class="field"><label>التكلفة (جنيه)</label><input type="number" id="lCost"></div>
-    <div class="field"><label>قراءة العداد الحالية</label><input type="number" id="lOdo" value="${getCurrentOdometer()||''}"></div>
-    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+    <h2>${t('log_change_title')}: ${part.name}</h2>
+    <div class="field"><label>${t('change_date')}</label><input type="date" id="lDate" value="${todayStr()}"></div>
+    <div class="field"><label>${t('cost_label')}</label><input type="number" id="lCost"></div>
+    <div class="field"><label>${t('current_odo')}</label><input type="number" id="lOdo" value="${getCurrentOdometer()||''}"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">${t('cancel')}</button><button class="confirm" id="sheetSave">${t('save_btn')}</button></div>
   `);
   document.getElementById('sheetCancel').addEventListener('click', closeSheet);
   document.getElementById('sheetSave').addEventListener('click', ()=>{
@@ -986,20 +1154,20 @@ function logPartChange(partId){
 }
 function renderMaintLog(){
   const el = document.getElementById('maintLogList');
-  if(!state.maintenanceLog.length){ el.innerHTML='<div class="empty">لا يوجد سجل صيانة بعد</div>'; return; }
+  if(!state.maintenanceLog.length){ el.innerHTML=`<div class="empty">${t('no_maint_log')}</div>`; return; }
   const sorted = [...state.maintenanceLog].sort((a,b)=>b.date.localeCompare(a.date));
-  el.innerHTML = sorted.map(l=>`<div class="pitem"><div class="row1"><span>${l.partName}</span><span>${fmt(l.cost)} ج</span></div><div class="pmeta">${dateAr(l.date)} · عند ${fmt(l.odometer)} كم</div></div>`).join('');
+  el.innerHTML = sorted.map(l=>`<div class="pitem"><div class="row1"><span>${l.partName}</span><span>${fmt(l.cost)}</span></div><div class="pmeta">${dateAr(l.date)} · ${t('at_km')} ${fmt(l.odometer)}</div></div>`).join('');
 }
 
 // ---------- FUEL LOG ----------
 function openFuelSheet(){
   openSheet(`
-    <h2>⛽ تسجيل تعبئة وقود</h2>
-    <div class="field"><label>تاريخ التعبئة</label><input type="date" id="fDate" value="${todayStr()}"></div>
-    <div class="field"><label>عدد اللترات اللي اتضافت</label><input type="number" id="fLiters" inputmode="decimal"></div>
-    <div class="field"><label>قراءة العداد الحالية (كم)</label><input type="number" id="fOdo" value="${getCurrentOdometer()||''}" inputmode="numeric"></div>
-    <div class="field"><label>سعر اللتر (اختياري)</label><input type="number" id="fPrice" inputmode="decimal"></div>
-    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+    <h2>${t('fuel_sheet_title')}</h2>
+    <div class="field"><label>${t('fuel_date')}</label><input type="date" id="fDate" value="${todayStr()}"></div>
+    <div class="field"><label>${t('fuel_liters')}</label><input type="number" id="fLiters" inputmode="decimal"></div>
+    <div class="field"><label>${t('install_odo')}</label><input type="number" id="fOdo" value="${getCurrentOdometer()||''}" inputmode="numeric"></div>
+    <div class="field"><label>${t('fuel_price_optional')}</label><input type="number" id="fPrice" inputmode="decimal"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">${t('cancel')}</button><button class="confirm" id="sheetSave">${t('save_btn')}</button></div>
   `);
   document.getElementById('sheetCancel').addEventListener('click', closeSheet);
   document.getElementById('sheetSave').addEventListener('click', ()=>{
@@ -1019,7 +1187,7 @@ function renderFuelList(){
   const avgVal = document.getElementById('fuelAvgVal');
   if(!el) return;
   const logs = (state.fuelLogs||[]).slice().sort((a,b)=>a.odometer-b.odometer);
-  if(!logs.length){ el.innerHTML='<div class="empty">لا توجد تعبئات مسجّلة بعد</div>'; if(avgCard) avgCard.style.display='none'; return; }
+  if(!logs.length){ el.innerHTML=`<div class="empty">${t('no_fuel_logs')}</div>`; if(avgCard) avgCard.style.display='none'; return; }
   let totalKm = 0, totalLiters = 0;
   const rows = logs.map((f,i)=>{
     let consText = '-';
@@ -1028,7 +1196,7 @@ function renderFuelList(){
       const km = f.odometer - prev.odometer;
       if(km>0 && f.liters>0){
         const cons = km/f.liters;
-        consText = `${fmt(cons)} كم/لتر`;
+        consText = `${fmt(cons)} ${t('km_per_liter')}`;
         totalKm += km; totalLiters += f.liters;
       }
     }
@@ -1040,9 +1208,9 @@ function renderFuelList(){
   } else if(avgCard) avgCard.style.display='none';
   el.innerHTML = rows.slice().reverse().map(({f,consText})=>`
     <div class="pitem">
-      <div class="row1"><span>${fmt(f.liters)} لتر</span><span>${consText}</span></div>
-      <div class="pmeta">${dateAr(f.date)} · عند ${fmt(f.odometer)} كم${f.price?` · ${fmt(f.price)} ج/لتر`:''}</div>
-      <div class="actions"><button class="delbtn" data-delf="${f.id}" style="flex:1;">حذف</button></div>
+      <div class="row1"><span>${fmt(f.liters)} ${t('liter_unit')}</span><span>${consText}</span></div>
+      <div class="pmeta">${dateAr(f.date)} · ${t('at_km')} ${fmt(f.odometer)} ${t('km_unit')}${f.price?` · ${fmt(f.price)} ${t('egp_per_liter')}`:''}</div>
+      <div class="actions"><button class="delbtn" data-delf="${f.id}" style="flex:1;">${t('delete_btn')}</button></div>
     </div>`).join('');
   el.querySelectorAll('[data-delf]').forEach(b=>b.addEventListener('click', ()=>{
     state.fuelLogs = state.fuelLogs.filter(f=>f.id!==b.dataset.delf);
@@ -1060,12 +1228,12 @@ function getAvgConsumption(){
 }
 function openReminderSheet(){
   openSheet(`
-    <h2>➕ إضافة تذكير</h2>
-    <div class="field"><label>النوع</label><select id="rType"><option value="رخصة">رخصة القيادة</option><option value="فحص دوري">فحص دوري</option><option value="تأمين">تأمين</option><option value="قسط الجمعية">قسط الجمعية (شهري)</option><option value="أخرى">أخرى</option></select></div>
-    <div class="field"><label>اسم/تفاصيل</label><input type="text" id="rName" placeholder="مثال: رخصة السيارة"></div>
-    <div id="rDateWrap" class="field"><label>تاريخ الاستحقاق</label><input type="date" id="rDate"></div>
-    <div id="rRecurWrap" class="field" style="display:none;"><label>تذكيري قبل بداية الشهر بعدد أيام</label><input type="number" id="rDaysBefore" value="3" min="1" max="28"></div>
-    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+    <h2>${t('add_reminder_title')}</h2>
+    <div class="field"><label>${t('reminder_type')}</label><select id="rType"><option value="رخصة">${t('opt_license')}</option><option value="فحص دوري">${t('opt_inspection')}</option><option value="تأمين">${t('opt_insurance')}</option><option value="قسط الجمعية">${t('opt_gameya')}</option><option value="أخرى">${t('opt_other')}</option></select></div>
+    <div class="field"><label>${t('reminder_name')}</label><input type="text" id="rName" placeholder="${t('reminder_name_ph')}"></div>
+    <div id="rDateWrap" class="field"><label>${t('due_date')}</label><input type="date" id="rDate"></div>
+    <div id="rRecurWrap" class="field" style="display:none;"><label>${t('recur_days_before')}</label><input type="number" id="rDaysBefore" value="3" min="1" max="28"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">${t('cancel')}</button><button class="confirm" id="sheetSave">${t('save_btn')}</button></div>
   `);
   document.getElementById('rType').addEventListener('change', e=>{
     const isRecurring = e.target.value==='قسط الجمعية';
@@ -1075,7 +1243,7 @@ function openReminderSheet(){
   document.getElementById('sheetCancel').addEventListener('click', closeSheet);
   document.getElementById('sheetSave').addEventListener('click', ()=>{
     const type = document.getElementById('rType').value;
-    const name = document.getElementById('rName').value.trim() || type;
+    const name = document.getElementById('rName').value.trim() || catLabel(type);
     if(type==='قسط الجمعية'){
       const daysBefore = Number(document.getElementById('rDaysBefore').value)||3;
       state.reminders.push({id:uid(), type, name, recurring:true, daysBefore});
@@ -1089,16 +1257,16 @@ function openReminderSheet(){
 }
 function renderReminders(){
   const el = document.getElementById('remindersList');
-  if(!state.reminders.length){ el.innerHTML='<div class="empty">لا توجد تذكيرات</div>'; return; }
+  if(!state.reminders.length){ el.innerHTML=`<div class="empty">${t('no_reminders')}</div>`; return; }
   const today = new Date();
   const withDates = state.reminders.map(r=>({r, d:computeReminderDate(r)}));
   withDates.sort((a,b)=>a.d-b.d);
   el.innerHTML = withDates.map(({r,d})=>{
     const days = Math.ceil((d-today)/86400000);
     const color = days<0?'var(--expense)':days<=30?'var(--accent)':'var(--income)';
-    const dateLabel = r.recurring ? `شهريًا، قبل بداية الشهر بـ${r.daysBefore} يوم` : dateAr(r.date);
-    return `<div class="pitem"><div class="row1"><span>${r.name}</span><span style="color:${color}">${days<0?'منتهي':days+' يوم'}</span></div><div class="pmeta">${r.type} · ${dateLabel}</div>
-      <div class="actions"><button class="delbtn" data-del="${r.id}" style="flex:1;">حذف</button></div></div>`;
+    const dateLabel = r.recurring ? t('monthly_before',{n:r.daysBefore}) : dateAr(r.date);
+    return `<div class="pitem"><div class="row1"><span>${r.name}</span><span style="color:${color}">${days<0?t('overdue_word'):days+' '+t('days_word')}</span></div><div class="pmeta">${catLabel(r.type)} · ${dateLabel}</div>
+      <div class="actions"><button class="delbtn" data-del="${r.id}" style="flex:1;">${t('delete_btn')}</button></div></div>`;
   }).join('');
   el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>{
     state.reminders = state.reminders.filter(r=>r.id!==b.dataset.del); scheduleSave(); renderReminders(); renderHome();
@@ -1120,12 +1288,12 @@ function bindContacts(){
 }
 function openSupplierSheet(){
   openSheet(`
-    <h2>➕ إضافة مورد / ورشة</h2>
-    <div class="field"><label>الاسم</label><input type="text" id="sName"></div>
-    <div class="field"><label>رقم الهاتف</label><input type="tel" id="sPhone"></div>
-    <div class="field"><label>العنوان</label><input type="text" id="sAddr"></div>
-    <div class="field"><label>التخصص</label><input type="text" id="sSpec" placeholder="مثال: كهرباء، ميكانيكا"></div>
-    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+    <h2>${t('add_supplier_title')}</h2>
+    <div class="field"><label>${t('name_label')}</label><input type="text" id="sName"></div>
+    <div class="field"><label>${t('phone_label')}</label><input type="tel" id="sPhone"></div>
+    <div class="field"><label>${t('address_label')}</label><input type="text" id="sAddr"></div>
+    <div class="field"><label>${t('specialty_label')}</label><input type="text" id="sSpec" placeholder="${t('specialty_ph')}"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">${t('cancel')}</button><button class="confirm" id="sheetSave">${t('save_btn')}</button></div>
   `);
   document.getElementById('sheetCancel').addEventListener('click', closeSheet);
   document.getElementById('sheetSave').addEventListener('click', ()=>{
@@ -1136,7 +1304,7 @@ function openSupplierSheet(){
 }
 function renderSuppliers(){
   const el = document.getElementById('suppliersList');
-  if(!state.suppliers.length){ el.innerHTML='<div class="empty">لا يوجد موردين بعد</div>'; return; }
+  if(!state.suppliers.length){ el.innerHTML=`<div class="empty">${t('no_suppliers')}</div>`; return; }
   el.innerHTML = state.suppliers.map(s=>`
     <div class="contactitem">
       <div class="ci-info"><div class="ci-name">${escapeHtml(s.name)}</div><div class="ci-sub">${escapeHtml(s.specialty||'')}</div></div>
@@ -1150,11 +1318,11 @@ function renderSuppliers(){
 }
 function openCustomerSheet(){
   openSheet(`
-    <h2>➕ إضافة عميل</h2>
-    <div class="field"><label>الاسم</label><input type="text" id="cName"></div>
-    <div class="field"><label>رقم الهاتف</label><input type="tel" id="cPhone"></div>
-    <div class="field"><label>ملاحظات</label><input type="text" id="cNote"></div>
-    <div class="sheet-actions"><button class="cancel" id="sheetCancel">إلغاء</button><button class="confirm" id="sheetSave">حفظ</button></div>
+    <h2>${t('add_customer_title')}</h2>
+    <div class="field"><label>${t('name_label')}</label><input type="text" id="cName"></div>
+    <div class="field"><label>${t('phone_label')}</label><input type="tel" id="cPhone"></div>
+    <div class="field"><label>${t('notes_label')}</label><input type="text" id="cNote"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">${t('cancel')}</button><button class="confirm" id="sheetSave">${t('save_btn')}</button></div>
   `);
   document.getElementById('sheetCancel').addEventListener('click', closeSheet);
   document.getElementById('sheetSave').addEventListener('click', ()=>{
@@ -1165,7 +1333,7 @@ function openCustomerSheet(){
 }
 function renderCustomers(){
   const el = document.getElementById('customersList');
-  if(!state.customers.length){ el.innerHTML='<div class="empty">لا يوجد عملاء بعد</div>'; return; }
+  if(!state.customers.length){ el.innerHTML=`<div class="empty">${t('no_customers')}</div>`; return; }
   el.innerHTML = state.customers.map(c=>`
     <div class="contactitem">
       <div class="ci-info"><div class="ci-name">${escapeHtml(c.name)}</div><div class="ci-sub">${escapeHtml(c.notes||'')}</div></div>
@@ -1223,9 +1391,9 @@ function calcPress(k){
     try{
       const safe = calcExpr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/%/g,'/100');
       const result = Function('"use strict";return ('+safe+')')();
-      disp.textContent = Number.isFinite(result) ? (Math.round(result*10000)/10000).toString() : 'خطأ';
+      disp.textContent = Number.isFinite(result) ? (Math.round(result*10000)/10000).toString() : t('calc_error');
       calcExpr = Number.isFinite(result) ? result.toString() : '';
-    }catch(e){ disp.textContent='خطأ'; calcExpr=''; }
+    }catch(e){ disp.textContent=t('calc_error'); calcExpr=''; }
     return;
   }
   calcExpr += k; disp.textContent = calcExpr;
@@ -1233,6 +1401,18 @@ function calcPress(k){
 
 // ---------- SETTINGS ----------
 function bindSettings(){
+  const langAr = document.getElementById('langArBtn');
+  const langEn = document.getElementById('langEnBtn');
+  langAr.classList.toggle('active', currentLang==='ar');
+  langEn.classList.toggle('active', currentLang==='en');
+  langAr.addEventListener('click', ()=>{
+    setLanguage('ar');
+    langAr.classList.add('active'); langEn.classList.remove('active');
+  });
+  langEn.addEventListener('click', ()=>{
+    setLanguage('en');
+    langEn.classList.add('active'); langAr.classList.remove('active');
+  });
   const car = state.carInfo || {};
   document.getElementById('carType').value = car.type||'';
   document.getElementById('carModel').value = car.model||'';
@@ -1244,7 +1424,7 @@ function bindSettings(){
       year: document.getElementById('carYear').value.trim()
     };
     scheduleSave();
-    alertMsg('تم حفظ بيانات العربية');
+    alertMsg(t('saved_car_info'));
   });
   const pinSw = document.getElementById('pinSwitch');
   const darkSw = document.getElementById('darkSwitch');
@@ -1265,28 +1445,28 @@ function bindSettings(){
     if(!txt) return;
     try{ const parsed = JSON.parse(txt); state = Object.assign(state, parsed); scheduleSave(); applyTheme(); renderAll();
       pinSw.classList.toggle('on', !!state.pin); darkSw.classList.toggle('on', !!state.darkMode);
-      alertMsg('تم استيراد النسخة الاحتياطية بنجاح');
-    }catch(e){ alertMsg('صيغة غير صحيحة'); }
+      alertMsg(t('import_success'));
+    }catch(e){ alertMsg(t('import_invalid')); }
   });
   document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
 }
 function alertMsg(m){
-  openSheet(`<h2>${m}</h2><div class="sheet-actions"><button class="confirm" id="sheetOk" style="flex:1;">تمام</button></div>`);
+  openSheet(`<h2>${m}</h2><div class="sheet-actions"><button class="confirm" id="sheetOk" style="flex:1;">${t('ok_word')}</button></div>`);
   document.getElementById('sheetOk').addEventListener('click', closeSheet);
 }
 function exportCsv(){
-  let csv = 'التاريخ,النوع,الفئة,المبلغ,ملاحظة\n';
+  let csv = `${t('csv_date')},${t('csv_type')},${t('csv_category')},${t('csv_amount')},${t('csv_note')}\n`;
   const sorted = [...state.transactions].sort((a,b)=>a.date.localeCompare(b.date));
-  sorted.forEach(t=>{
-    csv += `${t.date},${t.type==='income'?'دخل':'مصروف'},${t.category},${t.amount},"${(t.note||'').replace(/"/g,'""')}"\n`;
+  sorted.forEach(tx=>{
+    csv += `${tx.date},${tx.type==='income'?t('income_word'):t('expense_word')},${catLabel(tx.category)},${tx.amount},"${(tx.note||'').replace(/"/g,'""')}"\n`;
   });
-  const totalIncome = sorted.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
-  const totalExpense = sorted.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+  const totalIncome = sorted.filter(tx=>tx.type==='income').reduce((a,tx)=>a+tx.amount,0);
+  const totalExpense = sorted.filter(tx=>tx.type==='expense').reduce((a,tx)=>a+tx.amount,0);
   const totalNet = totalIncome - totalExpense;
   csv += '\n';
-  csv += `,,إجمالي الدخل,${totalIncome},\n`;
-  csv += `,,إجمالي المصروفات,${totalExpense},\n`;
-  csv += `,,صافي الربح,${totalNet},\n`;
+  csv += `,,${t('csv_total_income')},${totalIncome},\n`;
+  csv += `,,${t('csv_total_expense')},${totalExpense},\n`;
+  csv += `,,${t('csv_total_net')},${totalNet},\n`;
   try{
     const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
     const url = URL.createObjectURL(blob);
@@ -1294,13 +1474,13 @@ function exportCsv(){
     setTimeout(()=>URL.revokeObjectURL(url), 3000);
   }catch(e){
     document.getElementById('backupText').value = csv;
-    alertMsg('تعذر التحميل المباشر - تم وضع البيانات في مربع النص بالأسفل');
+    alertMsg(t('csv_fallback'));
   }
 }
 
 // ---------- PIN LOCK ----------
 function buildLockKeypad(){
-  const keys = ['1','2','3','4','5','6','7','8','9','مسح','0','حذف'];
+  const keys = ['1','2','3','4','5','6','7','8','9',t('clear_word'),'0',t('delete_word')];
   document.getElementById('lockKeypad').innerHTML = keys.map(k=>`<button data-k="${k}">${k}</button>`).join('');
   document.querySelectorAll('#lockKeypad button').forEach(b=>b.addEventListener('click', ()=>lockPress(b.dataset.k)));
 }
@@ -1311,23 +1491,23 @@ function updateLockDots(){
 }
 function lockPress(k){
   const err = document.getElementById('lockErr');
-  if(k==='مسح'){ pinBuffer=''; err.textContent=''; updateLockDots(); return; }
-  if(k==='حذف'){ pinBuffer=pinBuffer.slice(0,-1); updateLockDots(); return; }
+  if(k===t('clear_word')){ pinBuffer=''; err.textContent=''; updateLockDots(); return; }
+  if(k===t('delete_word')){ pinBuffer=pinBuffer.slice(0,-1); updateLockDots(); return; }
   if(pinBuffer.length>=4) return;
   pinBuffer += k; updateLockDots();
   if(pinBuffer.length===4){
     if(pinSetupStage){ handlePinSetup(); return; }
     if(pinBuffer===state.pin){ err.textContent=''; hideLock(); }
-    else{ err.textContent='رمز غير صحيح'; setTimeout(()=>{ pinBuffer=''; updateLockDots(); },500); }
+    else{ err.textContent=t('wrong_pin'); setTimeout(()=>{ pinBuffer=''; updateLockDots(); },500); }
   }
 }
 function startPinSetup(){ pinSetupStage='first'; pinSetupFirst=''; pinBuffer=''; document.getElementById('lockErr').textContent=''; showLock(); }
 function handlePinSetup(){
   const err = document.getElementById('lockErr');
-  if(pinSetupStage==='first'){ pinSetupFirst=pinBuffer; pinBuffer=''; pinSetupStage='confirm'; err.textContent='أكّد الرمز'; updateLockDots(); }
+  if(pinSetupStage==='first'){ pinSetupFirst=pinBuffer; pinBuffer=''; pinSetupStage='confirm'; err.textContent=t('confirm_pin'); updateLockDots(); }
   else{
     if(pinBuffer===pinSetupFirst){ state.pin=pinBuffer; scheduleSave(); pinSetupStage=null; err.textContent=''; hideLock(); document.getElementById('pinSwitch').classList.add('on'); }
-    else{ err.textContent='الرمزين غير متطابقين، حاول تاني'; pinSetupStage='first'; pinBuffer=''; setTimeout(()=>updateLockDots(),400); }
+    else{ err.textContent=t('pin_mismatch'); pinSetupStage='first'; pinBuffer=''; setTimeout(()=>updateLockDots(),400); }
   }
 }
 
@@ -1342,7 +1522,7 @@ function gdriveInit(){
     state.googleClientId = cleaned;
     document.getElementById('gClientId').value = cleaned;
     scheduleSave();
-    alertMsg('تم الحفظ، دوس تسجيل الدخول بـ Google دلوقتي');
+    alertMsg(t('saved_client_id_ok'));
   });
   document.getElementById('gSignInBtn').addEventListener('click', gdriveSignIn);
   document.getElementById('showClientId').addEventListener('click', ()=>{
@@ -1350,31 +1530,31 @@ function gdriveInit(){
     const expected = '345218957992-7komguma69sninnuaod6eosk604dfe9c.apps.googleusercontent.com';
     const match = val === expected;
     openSheet(`
-      <h2>تفاصيل الكود المحفوظ</h2>
-      <div class="field"><label>الكود المحفوظ حاليًا (${val.length} حرف)</label><textarea class="dump" readonly style="height:80px;">${escapeHtml(val)}</textarea></div>
-      <div class="field"><label>الكود الصحيح المتوقع (${expected.length} حرف)</label><textarea class="dump" readonly style="height:80px;">${expected}</textarea></div>
-      <div style="font-weight:800;color:${match?'var(--income)':'var(--expense)'};text-align:center;padding:8px;">${match?'✅ الكود مطابق تمامًا':'❌ الكود غير مطابق'}</div>
-      <div class="sheet-actions"><button class="confirm" id="sheetOk" style="flex:1;">تمام</button></div>
+      <h2>${t('client_id_detail_title')}</h2>
+      <div class="field"><label>${t('saved_code_now')} (${val.length} ${t('chars_word')})</label><textarea class="dump" readonly style="height:80px;">${escapeHtml(val)}</textarea></div>
+      <div class="field"><label>${t('expected_code')} (${expected.length} ${t('chars_word')})</label><textarea class="dump" readonly style="height:80px;">${expected}</textarea></div>
+      <div style="font-weight:800;color:${match?'var(--income)':'var(--expense)'};text-align:center;padding:8px;">${match?t('code_match'):t('code_mismatch')}</div>
+      <div class="sheet-actions"><button class="confirm" id="sheetOk" style="flex:1;">${t('ok_word')}</button></div>
     `);
     document.getElementById('sheetOk').addEventListener('click', closeSheet);
   });
   document.getElementById('gBackupBtn').addEventListener('click', gdriveBackup);
   document.getElementById('gRestoreBtn').addEventListener('click', gdriveRestore);
-  if(state.gLastBackup) document.getElementById('gLastBackup').textContent = 'آخر نسخة احتياطية: '+state.gLastBackup;
+  if(state.gLastBackup) document.getElementById('gLastBackup').textContent = t('last_backup_label')+state.gLastBackup;
 }
 function gdriveSignIn(){
-  if(!state.googleClientId){ alertMsg('محتاج تحط Google Client ID الأول واحفظه'); return; }
-  if(typeof google==='undefined' || !google.accounts){ alertMsg('تعذر تحميل خدمة تسجيل الدخول من Google، تأكد من الإنترنت'); return; }
+  if(!state.googleClientId){ alertMsg(t('need_client_id')); return; }
+  if(typeof google==='undefined' || !google.accounts){ alertMsg(t('gsi_load_fail')); return; }
   gTokenClient = google.accounts.oauth2.initTokenClient({
     client_id: state.googleClientId,
     scope: 'https://www.googleapis.com/auth/drive.file',
     callback: (resp)=>{
-      if(resp.error){ alertMsg('تعذر تسجيل الدخول: '+resp.error); return; }
+      if(resp.error){ alertMsg(t('signin_fail')+resp.error); return; }
       gAccessToken = resp.access_token;
       gTokenExpiry = Date.now() + (resp.expires_in*1000);
       document.getElementById('gdriveSetup').style.display='none';
       document.getElementById('gdriveConnected').style.display='block';
-      document.getElementById('gSignInBtn').textContent='🔓 تسجيل خروج / تبديل الحساب';
+      document.getElementById('gSignInBtn').textContent=t('signout_switch');
     }
   });
   gTokenClient.requestAccessToken();
@@ -1395,7 +1575,7 @@ async function gdriveFindFile(){
   return (data.files && data.files[0]) ? data.files[0].id : null;
 }
 async function gdriveBackup(){
-  if(!(await gdriveEnsureToken())){ alertMsg('محتاج تسجل الدخول تاني'); return; }
+  if(!(await gdriveEnsureToken())){ alertMsg(t('need_signin_again')); return; }
   try{
     const fileId = await gdriveFindFile();
     const metadata = {name:'meshwary-backup.json', mimeType:'application/json'};
@@ -1410,25 +1590,25 @@ async function gdriveBackup(){
       body
     });
     if(!res.ok) throw new Error('upload failed');
-    const now = new Date().toLocaleString('ar-EG');
+    const now = new Date().toLocaleString(localeTag());
     state.gLastBackup = now; scheduleSave();
-    document.getElementById('gLastBackup').textContent = 'آخر نسخة احتياطية: '+now;
-    alertMsg('تم النسخ الاحتياطي بنجاح ✅');
-  }catch(e){ alertMsg('حصل خطأ أثناء النسخ الاحتياطي، حاول تاني'); }
+    document.getElementById('gLastBackup').textContent = t('last_backup_label')+now;
+    alertMsg(t('backup_success'));
+  }catch(e){ alertMsg(t('backup_error')); }
 }
 async function gdriveRestore(){
-  if(!(await gdriveEnsureToken())){ alertMsg('محتاج تسجل الدخول تاني'); return; }
+  if(!(await gdriveEnsureToken())){ alertMsg(t('need_signin_again')); return; }
   try{
     const fileId = await gdriveFindFile();
-    if(!fileId){ alertMsg('لا يوجد نسخة احتياطية محفوظة على Drive'); return; }
+    if(!fileId){ alertMsg(t('no_drive_backup')); return; }
     const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {headers:{Authorization:'Bearer '+gAccessToken}});
     const data = await res.json();
     state = Object.assign(state, data);
     scheduleSave(); applyTheme(); renderAll();
     document.getElementById('pinSwitch').classList.toggle('on', !!state.pin);
     document.getElementById('darkSwitch').classList.toggle('on', !!state.darkMode);
-    alertMsg('تم الاسترجاع من Drive بنجاح ✅');
-  }catch(e){ alertMsg('حصل خطأ أثناء الاسترجاع، حاول تاني'); }
+    alertMsg(t('restore_success'));
+  }catch(e){ alertMsg(t('restore_error')); }
 }
 
 init();
