@@ -586,7 +586,7 @@ const I18N = { ar:{
   security_question_label:'اكتب سؤال (مثال: اسم أول عربية ركبتها؟)', security_answer_label:'الإجابة', skip_word:'تخطي',
   security_setup_needed:'محتاج تكتب السؤال والإجابة', forgot_pin_title:'استرجاع الرمز', no_security_question:'معلش، مفيش سؤال أمان محفوظ عندك. جرب تفتكر الرمز أو امسح بيانات المتصفح.',
   enter_answer_hint:'جاوب على السؤال اللي سجّلته عشان تقدر تظبط رمز جديد', wrong_answer:'الإجابة غير صحيحة', answer_correct_set_new:'✅ صح! دلوقتي حط رمز جديد',
-  submit_word:'تأكيد'
+  submit_word:'تأكيد', too_many_attempts:'حاولت 3 مرات غلط. حابب تسترجع الرمز بسؤال الأمان؟', use_security_question:'نعم، سؤال الأمان'
 }, en:{
   nav_home:'Home', nav_log:'Log', nav_maint:'Maintenance', nav_contacts:'Contacts', nav_calc:'Calculator', nav_settings:'Settings',
   reg_day:'📅 Recording day', summary_title:"Today's Summary", total_income:'Total Income', total_expense:'Total Expenses', net_profit:'Net Profit',
@@ -658,7 +658,7 @@ const I18N = { ar:{
   security_question_label:'Write a question (e.g. Name of your first car?)', security_answer_label:'Answer', skip_word:'Skip',
   security_setup_needed:'You need to fill in the question and answer', forgot_pin_title:'Recover PIN', no_security_question:"Sorry, you don't have a security question saved. Try to remember your PIN or clear browser data.",
   enter_answer_hint:'Answer the question you registered so you can set a new PIN', wrong_answer:'Incorrect answer', answer_correct_set_new:'✅ Correct! Now set a new PIN',
-  submit_word:'Submit'
+  submit_word:'Submit', too_many_attempts:'3 wrong attempts. Want to recover your PIN using the security question?', use_security_question:'Yes, security question'
 }};
 function t(key, vars){
   let s = (I18N[currentLang] && I18N[currentLang][key]) || I18N.ar[key] || key;
@@ -1596,9 +1596,20 @@ function bindOnboarding(){
   });
 }
 bindOnboarding();
+const SECURITY_QUESTIONS = [
+  {key:'car', ar:'اسم أول عربية ركبتها؟', en:'What was the first car you rode in?'},
+  {key:'father', ar:'اسم الأب؟', en:"Father's name?"},
+  {key:'mother', ar:'اسم الأم؟', en:"Mother's name?"},
+  {key:'school', ar:'اسم أول مدرسة التحقت بيها؟', en:'Name of your first school?'},
+  {key:'dream', ar:'بلد بتتمنى تزوره؟', en:'A country you dream of visiting?'},
+  {key:'city', ar:'المدينة اللي اتولدت فيها؟', en:'City where you were born?'},
+  {key:'pet', ar:'اسم أول حيوان أليف ليك؟', en:'Name of your first pet?'}
+];
+function securityQuestionLabel(key){ const q = SECURITY_QUESTIONS.find(s=>s.key===key); return q ? q[currentLang] : ''; }
 function updateLockDots(){
   document.getElementById('lockDots').innerHTML = [0,1,2,3].map(i=>`<span class="${i<pinBuffer.length?'filled':''}"></span>`).join('');
 }
+let wrongAttempts = 0;
 function lockPress(k){
   const err = document.getElementById('lockErr');
   if(k===t('clear_word')){ pinBuffer=''; err.textContent=''; updateLockDots(); return; }
@@ -1607,9 +1618,27 @@ function lockPress(k){
   pinBuffer += k; updateLockDots();
   if(pinBuffer.length===4){
     if(pinSetupStage){ handlePinSetup(); return; }
-    if(pinBuffer===state.pin){ err.textContent=''; hideLock(); }
-    else{ err.textContent=t('wrong_pin'); setTimeout(()=>{ pinBuffer=''; updateLockDots(); },500); }
+    if(pinBuffer===state.pin){ err.textContent=''; wrongAttempts=0; hideLock(); }
+    else{
+      wrongAttempts++;
+      err.textContent=t('wrong_pin');
+      setTimeout(()=>{ pinBuffer=''; updateLockDots(); },500);
+      if(wrongAttempts>=3){ wrongAttempts=0; setTimeout(showAttemptsExceededPopup, 550); }
+    }
   }
+}
+function showAttemptsExceededPopup(){
+  hideLock();
+  openSheet(`
+    <h2>${t('forgot_pin_title')}</h2>
+    <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 14px;">${t('too_many_attempts')}</p>
+    <div class="sheet-actions">
+      <button class="cancel" id="sheetLater">${t('cancel')}</button>
+      <button class="confirm" id="sheetGoRecover">${t('use_security_question')}</button>
+    </div>
+  `);
+  document.getElementById('sheetLater').addEventListener('click', ()=>{ closeSheet(); showLock(); });
+  document.getElementById('sheetGoRecover').addEventListener('click', ()=>{ closeSheet(); openForgotPinFlow(); });
 }
 function startPinSetup(){ pinSetupStage='first'; pinSetupFirst=''; pinBuffer=''; document.getElementById('lockErr').textContent=''; showLock(); }
 function handlePinSetup(){
@@ -1621,50 +1650,52 @@ function handlePinSetup(){
   }
 }
 function promptSecurityQuestionSetup(){
+  const optHtml = SECURITY_QUESTIONS.map(q=>`<option value="${q.key}" ${state.securityQuestion&&state.securityQuestion.qKey===q.key?'selected':''}>${q[currentLang]}</option>`).join('');
   openSheet(`
     <h2>${t('setup_security_title')}</h2>
     <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 12px;">${t('setup_security_hint')}</p>
-    <div class="field"><label>${t('security_question_label')}</label><input type="text" id="secQ" value="${state.securityQuestion?escapeHtml(state.securityQuestion.q):''}"></div>
+    <div class="field"><label>${t('security_question_label')}</label><select id="secQKey">${optHtml}</select></div>
     <div class="field"><label>${t('security_answer_label')}</label><input type="text" id="secA"></div>
     <div class="sheet-actions"><button class="cancel" id="sheetSkip">${t('skip_word')}</button><button class="confirm" id="sheetSave">${t('save_btn')}</button></div>
   `);
   document.getElementById('sheetSkip').addEventListener('click', closeSheet);
   document.getElementById('sheetSave').addEventListener('click', ()=>{
-    const q = document.getElementById('secQ').value.trim();
+    const qKey = document.getElementById('secQKey').value;
     const a = document.getElementById('secA').value.trim().toLowerCase();
-    if(!q || !a){ alertMsg(t('security_setup_needed')); return; }
-    state.securityQuestion = {q, a};
+    if(!qKey || !a){ alertMsg(t('security_setup_needed')); return; }
+    state.securityQuestion = {qKey, a};
     scheduleSave();
     closeSheet();
   });
 }
-function bindForgotPin(){
-  document.getElementById('forgotPinLink').addEventListener('click', ()=>{
-    if(!state.securityQuestion || !state.securityQuestion.q){
-      openSheet(`<h2>${t('forgot_pin_title')}</h2><p style="font-size:13px;color:var(--text-dim);">${t('no_security_question')}</p><div class="sheet-actions"><button class="confirm" id="sheetOk" style="flex:1;">${t('ok_word')}</button></div>`);
-      document.getElementById('sheetOk').addEventListener('click', closeSheet);
-      return;
+function openForgotPinFlow(){
+  hideLock();
+  if(!state.securityQuestion || !state.securityQuestion.qKey){
+    openSheet(`<h2>${t('forgot_pin_title')}</h2><p style="font-size:13px;color:var(--text-dim);">${t('no_security_question')}</p><div class="sheet-actions"><button class="confirm" id="sheetOk" style="flex:1;">${t('ok_word')}</button></div>`);
+    document.getElementById('sheetOk').addEventListener('click', ()=>{ closeSheet(); showLock(); });
+    return;
+  }
+  openSheet(`
+    <h2>${t('forgot_pin_title')}</h2>
+    <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 6px;">${escapeHtml(securityQuestionLabel(state.securityQuestion.qKey))}</p>
+    <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px;">${t('enter_answer_hint')}</p>
+    <div class="field"><label>${t('security_answer_label')}</label><input type="text" id="secAnswer" autofocus></div>
+    <div id="secErr" style="color:var(--expense);font-size:12px;font-weight:700;min-height:14px;"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetCancel">${t('cancel')}</button><button class="confirm" id="sheetSubmit">${t('submit_word')}</button></div>
+  `);
+  document.getElementById('sheetCancel').addEventListener('click', ()=>{ closeSheet(); showLock(); });
+  document.getElementById('sheetSubmit').addEventListener('click', ()=>{
+    const ans = document.getElementById('secAnswer').value.trim().toLowerCase();
+    if(ans && ans===state.securityQuestion.a){
+      closeSheet();
+      startPinSetup();
+    } else {
+      document.getElementById('secErr').textContent = t('wrong_answer');
     }
-    openSheet(`
-      <h2>${t('forgot_pin_title')}</h2>
-      <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 6px;">${escapeHtml(state.securityQuestion.q)}</p>
-      <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px;">${t('enter_answer_hint')}</p>
-      <div class="field"><label>${t('security_answer_label')}</label><input type="text" id="secAnswer" autofocus></div>
-      <div id="secErr" style="color:var(--expense);font-size:12px;font-weight:700;min-height:14px;"></div>
-      <div class="sheet-actions"><button class="cancel" id="sheetCancel">${t('cancel')}</button><button class="confirm" id="sheetSubmit">${t('submit_word')}</button></div>
-    `);
-    document.getElementById('sheetCancel').addEventListener('click', closeSheet);
-    document.getElementById('sheetSubmit').addEventListener('click', ()=>{
-      const ans = document.getElementById('secAnswer').value.trim().toLowerCase();
-      if(ans && ans===state.securityQuestion.a){
-        closeSheet();
-        hideLock();
-        startPinSetup();
-      } else {
-        document.getElementById('secErr').textContent = t('wrong_answer');
-      }
-    });
   });
+}
+function bindForgotPin(){
+  document.getElementById('forgotPinLink').addEventListener('click', openForgotPinFlow);
 }
 
 // ---------- GOOGLE DRIVE BACKUP ----------
