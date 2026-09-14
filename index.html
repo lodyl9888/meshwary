@@ -181,6 +181,15 @@ nav.bottom button.active{color:var(--accent);}
 #lock .dots span.filled{background:var(--accent);border-color:var(--accent);}
 #lock .keypad{display:grid;grid-template-columns:repeat(3,64px);gap:14px;}
 #lock .keypad button{width:64px;height:64px;border-radius:50%;border:none;background:var(--surface2);color:var(--text);font-size:22px;font-weight:700;cursor:pointer;}
+
+#onboard{position:fixed;inset:0;background:var(--bg);z-index:60;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;}
+#onboard.show{display:flex;}
+.platform-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--surface);border:2px solid var(--border);cursor:pointer;}
+.platform-card.selected{border-color:var(--accent);background:var(--accent-soft);}
+.platform-badge{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:17px;flex-shrink:0;}
+.platform-name{font-weight:800;font-size:15px;flex:1;}
+.platform-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;}
+.platform-card.selected .platform-check{background:var(--accent);border-color:var(--accent);}
 #lock .err{color:var(--expense);font-size:12px;font-weight:700;height:14px;}
 </style>
 </head>
@@ -192,6 +201,15 @@ nav.bottom button.active{color:var(--accent);}
   <div class="dots" id="lockDots"></div>
   <div class="err" id="lockErr"></div>
   <div class="keypad" id="lockKeypad"></div>
+  <button id="forgotPinLink" style="background:none;border:none;color:var(--text-dim);font-size:13px;text-decoration:underline;margin-top:6px;" data-i18n="forgot_pin">نسيت الرمز؟</button>
+</div>
+
+<div id="onboard">
+  <div class="mark">🚗</div>
+  <div style="font-weight:900;font-size:19px;text-align:center;" data-i18n="onboard_title">أهلاً بيك في مشواري!</div>
+  <div style="font-size:13px;color:var(--text-dim);text-align:center;max-width:280px;" data-i18n="onboard_subtitle">اختار الشركات اللي بتشتغل بيها (تقدر تعدّلها بعدين من الإعدادات)</div>
+  <div id="onboardPlatforms" style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;"></div>
+  <button class="savebtn" id="onboardContinue" style="max-width:320px;width:100%;" data-i18n="onboard_continue">استمرار</button>
 </div>
 
 <div id="app">
@@ -374,6 +392,12 @@ nav.bottom button.active{color:var(--accent);}
         </div>
       </div>
       <div class="card">
+        <h3 data-i18n="platforms_title">🚕 شركات التوصيل</h3>
+        <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px;" data-i18n="platforms_hint">اختار الشركات اللي بتشتغل بيها، وهتظهر كخيارات عند تسجيل الدخل</p>
+        <div id="settingsPlatforms" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <button class="savebtn" id="savePlatforms" data-i18n="save_btn">حفظ</button>
+      </div>
+      <div class="card">
         <h3 data-i18n="car_info_title">🚘 بيانات العربية</h3>
         <div class="field"><label data-i18n="car_type">نوع/ماركة العربية</label><input type="text" id="carType" data-i18n-ph="car_type_ph" placeholder="مثال: هيونداي"></div>
         <div class="field"><label data-i18n="car_model">الموديل</label><input type="text" id="carModel" data-i18n-ph="car_model_ph" placeholder="مثال: إلنترا"></div>
@@ -462,7 +486,21 @@ async function loadData(){
 }
 
 const EXPENSE_CATS = ['بنزين','غاز','صيانة','تغيير زيت','غسيل','مخالفات','شخصي','صيانة كاوتش','جراچ سيارة','إكراميات','نفقة نور الشهرية','مصروف شخصي لنور','مشتريات منزلية','فاتورة الغاز','شحن كارت كهرباء','فاتورة المياه','فاتورة الخط الأرضي','فاتورة النت','شحن رصيد للموبايل','قسط الجمعية','تجديد رخصة سيارة','تجديد رخصة شخصية','أخرى'];
-const INCOME_SOURCES = ['DiDi','توصيل طلاب','مشوار شخصي'];
+const PLATFORMS = [
+  {id:'DiDi', color:'#FF6D00', letter:'D'},
+  {id:'Uber', color:'#000000', letter:'U'},
+  {id:'Careem', color:'#00C2A8', letter:'C'},
+  {id:'InDriver', color:'#2E6BFF', letter:'I'}
+];
+const FIXED_INCOME_SOURCES = ['توصيل طلاب','مشوار شخصي'];
+function getIncomeSources(){ return [...(state.platforms&&state.platforms.length?state.platforms:['DiDi']), ...FIXED_INCOME_SOURCES]; }
+function platformColor(cat){
+  const p = PLATFORMS.find(pl=>pl.id===cat);
+  if(p) return p.color;
+  if(cat==='توصيل طلاب') return 'var(--accent)';
+  if(cat==='مشوار شخصي') return '#8B7FD9';
+  return 'var(--income)';
+}
 
 // ---------- I18N ----------
 let currentLang = 'ar';
@@ -540,7 +578,15 @@ const I18N = { ar:{
   enter_pin:'أدخل رمز الدخول', wrong_pin:'رمز غير صحيح', confirm_pin:'أكّد الرمز', pin_mismatch:'الرمزين غير متطابقين، حاول تاني',
   clear_word:'مسح', delete_word:'حذف',
   csv_date:'التاريخ', csv_type:'النوع', csv_category:'الفئة', csv_amount:'المبلغ', csv_note:'ملاحظة',
-  csv_total_income:'إجمالي الدخل', csv_total_expense:'إجمالي المصروفات', csv_total_net:'صافي الربح'
+  csv_total_income:'إجمالي الدخل', csv_total_expense:'إجمالي المصروفات', csv_total_net:'صافي الربح',
+  onboard_title:'أهلاً بيك في مشواري!', onboard_subtitle:'اختار الشركات اللي بتشتغل بيها (تقدر تعدّلها بعدين من الإعدادات)',
+  onboard_continue:'استمرار', select_at_least_one:'اختار شركة واحدة على الأقل',
+  platforms_title:'🚕 شركات التوصيل', platforms_hint:'اختار الشركات اللي بتشتغل بيها، وهتظهر كخيارات عند تسجيل الدخل', platforms_saved:'تم حفظ الشركات',
+  forgot_pin:'نسيت الرمز؟', setup_security_title:'🔐 سؤال أمان (لاسترجاع الرمز)', setup_security_hint:'لو نسيت رمزك، هتقدر تسترجعه بالإجابة على السؤال ده',
+  security_question_label:'اكتب سؤال (مثال: اسم أول عربية ركبتها؟)', security_answer_label:'الإجابة', skip_word:'تخطي',
+  security_setup_needed:'محتاج تكتب السؤال والإجابة', forgot_pin_title:'استرجاع الرمز', no_security_question:'معلش، مفيش سؤال أمان محفوظ عندك. جرب تفتكر الرمز أو امسح بيانات المتصفح.',
+  enter_answer_hint:'جاوب على السؤال اللي سجّلته عشان تقدر تظبط رمز جديد', wrong_answer:'الإجابة غير صحيحة', answer_correct_set_new:'✅ صح! دلوقتي حط رمز جديد',
+  submit_word:'تأكيد'
 }, en:{
   nav_home:'Home', nav_log:'Log', nav_maint:'Maintenance', nav_contacts:'Contacts', nav_calc:'Calculator', nav_settings:'Settings',
   reg_day:'📅 Recording day', summary_title:"Today's Summary", total_income:'Total Income', total_expense:'Total Expenses', net_profit:'Net Profit',
@@ -604,7 +650,15 @@ const I18N = { ar:{
   enter_pin:'Enter your PIN', wrong_pin:'Incorrect PIN', confirm_pin:'Confirm PIN', pin_mismatch:"PINs don't match, try again",
   clear_word:'Clear', delete_word:'Delete',
   csv_date:'Date', csv_type:'Type', csv_category:'Category', csv_amount:'Amount', csv_note:'Note',
-  csv_total_income:'Total Income', csv_total_expense:'Total Expenses', csv_total_net:'Net Profit'
+  csv_total_income:'Total Income', csv_total_expense:'Total Expenses', csv_total_net:'Net Profit',
+  onboard_title:'Welcome to Meshwary!', onboard_subtitle:'Choose the platforms you work with (you can change this later in Settings)',
+  onboard_continue:'Continue', select_at_least_one:'Select at least one platform',
+  platforms_title:'🚕 Delivery Platforms', platforms_hint:'Choose the platforms you work with, they will appear as options when logging income', platforms_saved:'Platforms saved',
+  forgot_pin:'Forgot PIN?', setup_security_title:'🔐 Security Question (to recover PIN)', setup_security_hint:"If you forget your PIN, you'll be able to recover it by answering this question",
+  security_question_label:'Write a question (e.g. Name of your first car?)', security_answer_label:'Answer', skip_word:'Skip',
+  security_setup_needed:'You need to fill in the question and answer', forgot_pin_title:'Recover PIN', no_security_question:"Sorry, you don't have a security question saved. Try to remember your PIN or clear browser data.",
+  enter_answer_hint:'Answer the question you registered so you can set a new PIN', wrong_answer:'Incorrect answer', answer_correct_set_new:'✅ Correct! Now set a new PIN',
+  submit_word:'Submit'
 }};
 function t(key, vars){
   let s = (I18N[currentLang] && I18N[currentLang][key]) || I18N.ar[key] || key;
@@ -642,9 +696,11 @@ async function init(){
   bindContacts();
   bindCalc();
   bindSettings();
+  bindForgotPin();
   gdriveInit();
   renderAll();
-  if(state.pin){ showLock(); } 
+  if(!state.onboardingDone){ showOnboarding(); }
+  else if(state.pin){ showLock(); }
 }
 function applyTheme(){ document.body.setAttribute('data-theme', state.darkMode?'dark':'light'); document.querySelector('meta[name=theme-color]').setAttribute('content', state.darkMode?'#0F1620':'#0F1B2B'); }
 
@@ -695,8 +751,9 @@ function bindHome(){
 }
 function openTxSheet(type, existing){
   const isInc = type==='income';
-  const options = isInc?INCOME_SOURCES:EXPENSE_CATS;
-  const optHtml = options.map(o=>`<option value="${o}" ${existing&&existing.category===o?'selected':''}>${catLabel(o)}</option>`).join('');
+  const options = isInc?getIncomeSources():EXPENSE_CATS;
+  const defaultCat = existing ? existing.category : (isInc ? (state.lastIncomeCategory || options[0]) : null);
+  const optHtml = options.map(o=>`<option value="${o}" ${defaultCat===o?'selected':''}>${catLabel(o)}</option>`).join('');
   openSheet(`
     <h2>${isInc?t('add_income_title'):t('add_expense_title')}</h2>
     <div class="field"><label>${t('amount_label')}</label><input type="number" id="txAmount" inputmode="decimal" value="${existing?existing.amount:''}" autofocus></div>
@@ -723,6 +780,7 @@ function openTxSheet(type, existing){
     } else {
       state.transactions.push({id:uid(), date:selectedHomeDate, type, amount, category:cat, note});
     }
+    if(isInc) state.lastIncomeCategory = cat;
     scheduleSave(); closeSheet(); renderAll();
   });
 }
@@ -849,7 +907,9 @@ function updateTripUI(){
 }
 function openTripIncomeSheet(mins){
   const durText = mins<60 ? `${mins} ${t('minute_word')}` : `${Math.floor(mins/60)} ${t('hour_word')} ${mins%60} ${t('minute_word')}`;
-  const optHtml = INCOME_SOURCES.map(o=>`<option value="${o}">${catLabel(o)}</option>`).join('');
+  const sources = getIncomeSources();
+  const defaultCat = state.lastIncomeCategory || sources[0];
+  const optHtml = sources.map(o=>`<option value="${o}" ${defaultCat===o?'selected':''}>${catLabel(o)}</option>`).join('');
   openSheet(`
     <h2>${t('trip_ended')} (${durText})</h2>
     <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 12px;">${t('trip_log_hint')}</p>
@@ -866,6 +926,7 @@ function openTripIncomeSheet(mins){
     if(amount<=0){ closeSheet(); return; }
     const cat = document.getElementById('tripIncCat').value;
     state.transactions.push({id:uid(), date:selectedHomeDate, type:'income', amount, category:cat, note:`${t('trip_duration_note')}: ${durText}`});
+    state.lastIncomeCategory = cat;
     scheduleSave(); closeSheet(); renderAll();
   });
 }
@@ -1054,11 +1115,11 @@ function periodRange(period){
 function renderReport(period){
   const [s,e] = periodRange(period);
   const txs = state.transactions.filter(t=>t.date>=s && t.date<=e);
-  const incDidi = txs.filter(t=>t.type==='income'&&t.category==='DiDi').reduce((a,t)=>a+t.amount,0);
-  const incStu = txs.filter(t=>t.type==='income'&&t.category==='توصيل طلاب').reduce((a,t)=>a+t.amount,0);
-  const incPersonal = txs.filter(t=>t.type==='income'&&t.category==='مشوار شخصي').reduce((a,t)=>a+t.amount,0);
+  const incomeByCat = {};
+  txs.filter(t=>t.type==='income').forEach(t=>{ incomeByCat[t.category] = (incomeByCat[t.category]||0) + t.amount; });
+  const totalIncome = Object.values(incomeByCat).reduce((a,b)=>a+b,0);
   const exp = txs.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-  const net = incDidi+incStu+incPersonal-exp;
+  const net = totalIncome - exp;
   const metaEntries = Object.keys(state.dailyMeta).filter(d=>d>=s&&d<=e).sort().map(d=>state.dailyMeta[d]);
   const hours = metaEntries.reduce((a,m)=>a+(m.hours||0),0);
   const trips = metaEntries.reduce((a,m)=>a+(m.trips||0),0);
@@ -1067,10 +1128,12 @@ function renderReport(period){
   const days = (new Date(e)-new Date(s))/86400000 + 1;
   const titles = {daily:t('report_daily_title'), weekly:t('report_weekly_title'), monthly:t('report_monthly_title')};
   document.getElementById('reportTitle').textContent = titles[period];
-  const max = Math.max(incDidi, incStu, incPersonal, exp, 1);
-  document.getElementById('reportBars').innerHTML = [
-    [t('report_didi'), incDidi, 'var(--income)'], [t('report_students'), incStu, 'var(--accent)'], [t('report_personal'), incPersonal, '#8B7FD9'], [t('report_expenses'), exp, 'var(--expense)']
-  ].map(([l,v,c])=>`<div class="barrow"><div class="lbl"><span>${l}</span><span>${fmt(v)}</span></div><div class="bartrack"><div class="barfill" style="width:${(v/max*100)}%;background:${c};"></div></div></div>`).join('')
+  const allCats = [...new Set([...getIncomeSources(), ...Object.keys(incomeByCat)])];
+  const incomeBars = allCats.filter(cat=>incomeByCat[cat]).map(cat=>[catLabel(cat), incomeByCat[cat], platformColor(cat)]);
+  const bars = [...incomeBars, [t('report_expenses'), exp, 'var(--expense)']];
+  const max = Math.max(...bars.map(b=>b[1]), 1);
+  document.getElementById('reportBars').innerHTML = bars
+  .map(([l,v,c])=>`<div class="barrow"><div class="lbl"><span>${l}</span><span>${fmt(v)}</span></div><div class="bartrack"><div class="barfill" style="width:${(v/max*100)}%;background:${c};"></div></div></div>`).join('')
   + `<div class="barrow"><div class="lbl"><span>${t('report_net')}</span><span style="color:${net>=0?'var(--income)':'var(--expense)'}">${fmt(net)}</span></div></div>`;
   document.getElementById('repCostKm').textContent = km&&km>0 ? fmt(exp/km) : '-';
   document.getElementById('repProfitHr').textContent = hours>0 ? fmt(net/hours) : '-';
@@ -1413,6 +1476,14 @@ function bindSettings(){
     setLanguage('en');
     langEn.classList.add('active'); langAr.classList.remove('active');
   });
+  let settingsSelection = (state.platforms && state.platforms.length) ? [...state.platforms] : ['DiDi'];
+  renderPlatformPicker('settingsPlatforms', settingsSelection);
+  document.getElementById('savePlatforms').addEventListener('click', ()=>{
+    if(!settingsSelection.length){ alertMsg(t('select_at_least_one')); return; }
+    state.platforms = [...settingsSelection];
+    scheduleSave();
+    alertMsg(t('platforms_saved'));
+  });
   const car = state.carInfo || {};
   document.getElementById('carType').value = car.type||'';
   document.getElementById('carModel').value = car.model||'';
@@ -1486,6 +1557,45 @@ function buildLockKeypad(){
 }
 function showLock(){ document.getElementById('lock').classList.add('show'); pinBuffer=''; updateLockDots(); }
 function hideLock(){ document.getElementById('lock').classList.remove('show'); }
+
+// ---------- ONBOARDING & PLATFORM PICKER ----------
+function renderPlatformPicker(containerId, selected, onToggle){
+  const el = document.getElementById(containerId);
+  el.innerHTML = PLATFORMS.map(p=>`
+    <div class="platform-card ${selected.includes(p.id)?'selected':''}" data-pid="${p.id}">
+      <div class="platform-badge" style="background:${p.color};">${p.letter}</div>
+      <div class="platform-name">${p.id}</div>
+      <div class="platform-check">${selected.includes(p.id)?'✓':''}</div>
+    </div>`).join('');
+  el.querySelectorAll('.platform-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      const pid = card.dataset.pid;
+      const idx = selected.indexOf(pid);
+      if(idx>-1) selected.splice(idx,1); else selected.push(pid);
+      card.classList.toggle('selected');
+      card.querySelector('.platform-check').textContent = selected.includes(pid)?'✓':'';
+      if(onToggle) onToggle(selected);
+    });
+  });
+}
+let onboardSelection = [];
+function showOnboarding(){
+  onboardSelection = (state.platforms && state.platforms.length) ? [...state.platforms] : ['DiDi'];
+  renderPlatformPicker('onboardPlatforms', onboardSelection);
+  document.getElementById('onboard').classList.add('show');
+}
+function bindOnboarding(){
+  document.getElementById('onboardContinue').addEventListener('click', ()=>{
+    if(!onboardSelection.length){ alertMsg(t('select_at_least_one')); return; }
+    state.platforms = [...onboardSelection];
+    state.onboardingDone = true;
+    scheduleSave();
+    document.getElementById('onboard').classList.remove('show');
+    renderAll();
+    if(state.pin) showLock();
+  });
+}
+bindOnboarding();
 function updateLockDots(){
   document.getElementById('lockDots').innerHTML = [0,1,2,3].map(i=>`<span class="${i<pinBuffer.length?'filled':''}"></span>`).join('');
 }
@@ -1506,9 +1616,55 @@ function handlePinSetup(){
   const err = document.getElementById('lockErr');
   if(pinSetupStage==='first'){ pinSetupFirst=pinBuffer; pinBuffer=''; pinSetupStage='confirm'; err.textContent=t('confirm_pin'); updateLockDots(); }
   else{
-    if(pinBuffer===pinSetupFirst){ state.pin=pinBuffer; scheduleSave(); pinSetupStage=null; err.textContent=''; hideLock(); document.getElementById('pinSwitch').classList.add('on'); }
+    if(pinBuffer===pinSetupFirst){ state.pin=pinBuffer; scheduleSave(); pinSetupStage=null; err.textContent=''; hideLock(); document.getElementById('pinSwitch').classList.add('on'); promptSecurityQuestionSetup(); }
     else{ err.textContent=t('pin_mismatch'); pinSetupStage='first'; pinBuffer=''; setTimeout(()=>updateLockDots(),400); }
   }
+}
+function promptSecurityQuestionSetup(){
+  openSheet(`
+    <h2>${t('setup_security_title')}</h2>
+    <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 12px;">${t('setup_security_hint')}</p>
+    <div class="field"><label>${t('security_question_label')}</label><input type="text" id="secQ" value="${state.securityQuestion?escapeHtml(state.securityQuestion.q):''}"></div>
+    <div class="field"><label>${t('security_answer_label')}</label><input type="text" id="secA"></div>
+    <div class="sheet-actions"><button class="cancel" id="sheetSkip">${t('skip_word')}</button><button class="confirm" id="sheetSave">${t('save_btn')}</button></div>
+  `);
+  document.getElementById('sheetSkip').addEventListener('click', closeSheet);
+  document.getElementById('sheetSave').addEventListener('click', ()=>{
+    const q = document.getElementById('secQ').value.trim();
+    const a = document.getElementById('secA').value.trim().toLowerCase();
+    if(!q || !a){ alertMsg(t('security_setup_needed')); return; }
+    state.securityQuestion = {q, a};
+    scheduleSave();
+    closeSheet();
+  });
+}
+function bindForgotPin(){
+  document.getElementById('forgotPinLink').addEventListener('click', ()=>{
+    if(!state.securityQuestion || !state.securityQuestion.q){
+      openSheet(`<h2>${t('forgot_pin_title')}</h2><p style="font-size:13px;color:var(--text-dim);">${t('no_security_question')}</p><div class="sheet-actions"><button class="confirm" id="sheetOk" style="flex:1;">${t('ok_word')}</button></div>`);
+      document.getElementById('sheetOk').addEventListener('click', closeSheet);
+      return;
+    }
+    openSheet(`
+      <h2>${t('forgot_pin_title')}</h2>
+      <p style="font-size:13px;color:var(--text-dim);margin:-6px 0 6px;">${escapeHtml(state.securityQuestion.q)}</p>
+      <p style="font-size:12px;color:var(--text-dim);margin:0 0 10px;">${t('enter_answer_hint')}</p>
+      <div class="field"><label>${t('security_answer_label')}</label><input type="text" id="secAnswer" autofocus></div>
+      <div id="secErr" style="color:var(--expense);font-size:12px;font-weight:700;min-height:14px;"></div>
+      <div class="sheet-actions"><button class="cancel" id="sheetCancel">${t('cancel')}</button><button class="confirm" id="sheetSubmit">${t('submit_word')}</button></div>
+    `);
+    document.getElementById('sheetCancel').addEventListener('click', closeSheet);
+    document.getElementById('sheetSubmit').addEventListener('click', ()=>{
+      const ans = document.getElementById('secAnswer').value.trim().toLowerCase();
+      if(ans && ans===state.securityQuestion.a){
+        closeSheet();
+        hideLock();
+        startPinSetup();
+      } else {
+        document.getElementById('secErr').textContent = t('wrong_answer');
+      }
+    });
+  });
 }
 
 // ---------- GOOGLE DRIVE BACKUP ----------
